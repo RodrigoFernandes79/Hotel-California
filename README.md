@@ -33,7 +33,7 @@ Create a reservation management API for a hotel system.
 4. **API Endpoints:**
    - `GET /rooms`: List all rooms.
    - `GET /rooms/{id}`: Get details of a specific room.
-   - `POST /rooms`: Add a new room.
+   - `POST /rooms`: Add a new room.  ✅**DONE**
    - `PUT /rooms/{id}`: Update an existing room.
    - `DELETE /rooms/{id}`: Delete a room.
    - `GET /bookings`: List all reservations.
