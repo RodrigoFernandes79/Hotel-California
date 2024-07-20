@@ -3,6 +3,8 @@ package com.challenge.hotel_california.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "customers")
 @NoArgsConstructor
@@ -17,4 +19,7 @@ public class Customer {
     private String name;
     private String email;
     private String phone;
+
+    @OneToMany(mappedBy = "customerName", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Booking> bookings;
 }
