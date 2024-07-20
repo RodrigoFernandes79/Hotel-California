@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "rooms")
@@ -24,4 +25,8 @@ public class Room {
     private RoomType type;
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Booking> bookings;
+
 }
