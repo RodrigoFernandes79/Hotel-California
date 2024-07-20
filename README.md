@@ -9,7 +9,7 @@ Create a reservation management API for a hotel system.
 1. **Entities and Relationships:**
    - **`Room`**: Room with attributes like `id`, `number`, `type`, `price`, `status`. ✅**DONE**
    - **`Booking`**: Reservation with attributes like `id`, `customerName`, `checkInDate`, `checkOutDate`, `status`, `room`.
-   - **`Customer`**: Customer with attributes like `id`, `name`, `email`, `phone`.
+   - **`Customer`**: Customer with attributes like `id`, `name`, `email`, `phone`. ✅**DONE**
    - **Relationships:**
      - A reservation is associated with a single room and a customer.
      - A customer can have multiple reservations.
