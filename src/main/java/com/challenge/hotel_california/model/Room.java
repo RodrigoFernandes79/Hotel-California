@@ -1,11 +1,13 @@
 package com.challenge.hotel_california.model;
 
+import com.challenge.hotel_california.DTOs.RoomEntryDTO;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.enums.RoomType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,4 +31,10 @@ public class Room {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings;
 
+    public Room(RoomEntryDTO roomEntryDTO) {
+        this.number = roomEntryDTO.number();
+        this.price = roomEntryDTO.price();
+        this.type = roomEntryDTO.type();
+        this.status = roomEntryDTO.status();
+    }
 }
