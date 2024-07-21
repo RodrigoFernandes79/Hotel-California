@@ -1,5 +1,6 @@
 package com.challenge.hotel_california.model;
 
+import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +27,7 @@ public class Booking {
     @DateTimeFormat(pattern = "dd/MM/YYYY hh:mm")
     private LocalDate checkOutDate;
     @Enumerated(EnumType.STRING)
-    private RoomStatus status;
+    private BookingStatus status;
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
