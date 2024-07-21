@@ -31,9 +31,9 @@ Create a reservation management API for a hotel system.
    - **Error Handling** with `@ControllerAdvice`.
 
 4. **API Endpoints:**
-   - `GET /rooms`: List all rooms.
+   - `GET /rooms`: List all rooms. ✅**DONE**
    - `GET /rooms/{id}`: Get details of a specific room.
-   - `POST /rooms`: Add a new room.  ✅**DONE**
+   - `POST /rooms`: Add a new room. ✅**DONE**
    - `PUT /rooms/{id}`: Update an existing room.
    - `DELETE /rooms/{id}`: Delete a room.
    - `GET /bookings`: List all reservations.
