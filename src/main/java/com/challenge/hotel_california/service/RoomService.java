@@ -6,6 +6,8 @@ import com.challenge.hotel_california.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RoomService {
     @Autowired
@@ -14,5 +16,10 @@ public class RoomService {
     public Room addRoom(RoomEntryDTO roomEntryDTO) {
         Room room = new Room(roomEntryDTO);
         return roomRepository.save(room);
+    }
+
+    public List<Room> listAllRooms() {
+        List<Room> rooms = roomRepository.findAll();
+        return rooms;
     }
 }
