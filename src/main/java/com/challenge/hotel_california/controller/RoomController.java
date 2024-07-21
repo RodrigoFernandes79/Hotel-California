@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -55,5 +57,14 @@ public class RoomController {
                                                                      @PathVariable Long id) {
         Room room = roomService.updateAnExistingRoom(roomEntryDTO, id);
         return ResponseEntity.ok().body(new RoomGetUpdateByIdDTO(room));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public Map<String, String> inactivateARoom(@PathVariable Long id) {
+        Room room = roomService.inactivateARoom(id);
+        Map<String, String> message = new HashMap<>();
+        message.put("Room inactivated successfully: ", String.valueOf(room.getStatus()));
+        return message;
     }
 }
