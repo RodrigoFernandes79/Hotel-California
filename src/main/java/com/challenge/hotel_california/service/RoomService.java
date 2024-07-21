@@ -1,6 +1,7 @@
 package com.challenge.hotel_california.service;
 
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
+import com.challenge.hotel_california.exceptions.RoomNotFoundException;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +22,13 @@ public class RoomService {
     public List<Room> listAllRooms() {
         List<Room> rooms = roomRepository.findAll();
         return rooms;
+    }
+
+    public Room getDetailsOfASpecificRoom(Long id) {
+        Room room = roomRepository.getReferenceById(id);
+        if (!roomRepository.existsById(id)) {
+            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
+        }
+        return room;
     }
 }
