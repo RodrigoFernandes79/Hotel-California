@@ -28,13 +28,13 @@ Create a reservation management API for a hotel system.
    - **Relational Database** (e.g., PostgreSQL, MySQL). ✅**DONE**
    - **Flyway** for database migration. ✅**DONE**
    - **Integration Tests** with **Spring Test**.
-   - **Error Handling** with `@ControllerAdvice`.
+   - **Error Handling** with `@ControllerAdvice`. 🔄**In Progress**
 
 4. **API Endpoints:**
    - `GET /rooms`: List all rooms. ✅**DONE**
    - `GET /rooms/{id}`: Get details of a specific room. ✅**DONE**
    - `POST /rooms`: Add a new room. ✅**DONE**
-   - `PUT /rooms/{id}`: Update an existing room.
+   - `PUT /rooms/{id}`: Update an existing room. ✅**DONE**
    - `DELETE /rooms/{id}`: Delete a room.
    - `GET /bookings`: List all reservations.
    - `GET /bookings/{id}`: Get details of a specific reservation.

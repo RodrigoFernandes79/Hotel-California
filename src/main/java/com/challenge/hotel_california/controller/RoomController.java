@@ -1,9 +1,6 @@
 package com.challenge.hotel_california.controller;
 
-import com.challenge.hotel_california.DTOs.RoomEntryDTO;
-import com.challenge.hotel_california.DTOs.RoomGetByIdDTO;
-import com.challenge.hotel_california.DTOs.RoomOutputGetListDTO;
-import com.challenge.hotel_california.DTOs.RoomOutputPostDTO;
+import com.challenge.hotel_california.DTOs.*;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.service.RoomService;
 import jakarta.transaction.Transactional;
@@ -50,5 +47,13 @@ public class RoomController {
         Room room = roomService.getDetailsOfASpecificRoom(id);
 
         return ResponseEntity.ok().body(new RoomGetByIdDTO(room));
+    }
+
+    @PatchMapping("/{id}")
+    @Transactional
+    public ResponseEntity<RoomGetUpdateByIdDTO> updateAnExistingRoom(@RequestBody RoomEntryDTO roomEntryDTO,
+                                                                     @PathVariable Long id) {
+        Room room = roomService.updateAnExistingRoom(roomEntryDTO, id);
+        return ResponseEntity.ok().body(new RoomGetUpdateByIdDTO(room));
     }
 }
