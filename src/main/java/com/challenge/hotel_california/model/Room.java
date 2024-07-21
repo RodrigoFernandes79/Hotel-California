@@ -3,12 +3,12 @@ package com.challenge.hotel_california.model;
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.enums.RoomType;
+import com.challenge.hotel_california.exceptions.RoomNotAvailableException;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,4 +38,20 @@ public class Room {
         this.type = roomEntryDTO.type();
         this.status = roomEntryDTO.status();
     }
+
+    public void updateRoom(RoomEntryDTO roomEntryDTO) {
+        if (this.number != null) {
+            this.number = roomEntryDTO.number();
+        }
+        if (this.type != null) {
+            this.type = roomEntryDTO.type();
+        }
+        if (this.price != null) {
+            this.price = roomEntryDTO.price();
+        }
+        if (!this.status.equals(RoomStatus.AVAILABLE)) {
+            throw new RoomNotAvailableException("Room cannot change status because it is not available.");
+        }
+    }
 }
+

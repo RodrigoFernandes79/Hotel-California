@@ -18,4 +18,14 @@ public class GlobalExceptionsHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(RoomNotAvailableException.class)
+    public ResponseEntity<ResponseError> roomNotAvailableException(RoomNotAvailableException ex) {
+        ResponseError error = new ResponseError(
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

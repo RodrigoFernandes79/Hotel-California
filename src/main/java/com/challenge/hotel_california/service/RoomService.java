@@ -1,6 +1,7 @@
 package com.challenge.hotel_california.service;
 
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
+import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.RoomNotFoundException;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.RoomRepository;
@@ -30,5 +31,14 @@ public class RoomService {
             throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
         }
         return room;
+    }
+
+    public Room updateAnExistingRoom(RoomEntryDTO roomEntryDTO, Long id) {
+        Room room = roomRepository.getReferenceById(id);
+        if (!roomRepository.existsById(id)) {
+            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
+        }
+        room.updateRoom(roomEntryDTO);
+        return roomRepository.save(room);
     }
 }
