@@ -3,6 +3,7 @@ package com.challenge.hotel_california.model;
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.enums.RoomType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,8 +28,8 @@ public class Room {
     private RoomType type;
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
-
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Booking> bookings;
 
     public Room(RoomEntryDTO roomEntryDTO) {

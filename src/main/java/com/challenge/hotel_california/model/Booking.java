@@ -1,7 +1,7 @@
 package com.challenge.hotel_california.model;
 
 import com.challenge.hotel_california.enums.BookingStatus;
-import com.challenge.hotel_california.enums.RoomStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,7 +28,10 @@ public class Booking {
     private LocalDate checkOutDate;
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
+
+
 }

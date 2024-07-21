@@ -1,6 +1,7 @@
 package com.challenge.hotel_california.controller;
 
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
+import com.challenge.hotel_california.DTOs.RoomGetByIdDTO;
 import com.challenge.hotel_california.DTOs.RoomOutputGetListDTO;
 import com.challenge.hotel_california.DTOs.RoomOutputPostDTO;
 import com.challenge.hotel_california.model.Room;
@@ -36,11 +37,18 @@ public class RoomController {
     @GetMapping
     public ResponseEntity<List<RoomOutputGetListDTO>> listAllRooms() {
         List<Room> rooms = roomService.listAllRooms();
-        
+
         List<RoomOutputGetListDTO> roomOutputGetListDTOS = rooms.stream()
                 .map(RoomOutputGetListDTO::new)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(roomOutputGetListDTOS);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RoomGetByIdDTO> getDetailsOfASpecificRoom(@PathVariable Long id) {
+        Room room = roomService.getDetailsOfASpecificRoom(id);
+
+        return ResponseEntity.ok().body(new RoomGetByIdDTO(room));
     }
 }
