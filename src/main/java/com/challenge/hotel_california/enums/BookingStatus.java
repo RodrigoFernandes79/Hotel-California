@@ -4,5 +4,6 @@ public enum BookingStatus {
     PENDING,
     CONFIRMED,
     CHECKED_IN,
-    CANCELLED
+    CANCELLED,
+    COMPLETED    // Alternative to indicate total completion
 }

@@ -28,4 +28,13 @@ public class GlobalExceptionsHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+    @ExceptionHandler(BookingsExistsException.class)
+    public ResponseEntity<ResponseError> BookingsExistsException(BookingsExistsException ex) {
+        ResponseError error = new ResponseError(
+                ex.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }
