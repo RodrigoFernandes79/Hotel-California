@@ -1,17 +1,18 @@
 package com.challenge.hotel_california.controller;
 
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
+import com.challenge.hotel_california.DTOs.RoomOutputGetListDTO;
 import com.challenge.hotel_california.DTOs.RoomOutputPostDTO;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.service.RoomService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rooms")
@@ -30,5 +31,16 @@ public class RoomController {
                 .buildAndExpand(room.getId()).toUri();
         return ResponseEntity.created(uri).body(new RoomOutputPostDTO(room));
 
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RoomOutputGetListDTO>> listAllRooms() {
+        List<Room> rooms = roomService.listAllRooms();
+        
+        List<RoomOutputGetListDTO> roomOutputGetListDTOS = rooms.stream()
+                .map(RoomOutputGetListDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(roomOutputGetListDTOS);
     }
 }
