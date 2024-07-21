@@ -1,15 +1,19 @@
 package com.challenge.hotel_california.service;
 
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
+import com.challenge.hotel_california.DTOs.RoomOutputGetListDTO;
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.BookingsExistsException;
+import com.challenge.hotel_california.exceptions.RoomListNotFoundException;
 import com.challenge.hotel_california.exceptions.RoomNotFoundException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.BookingRepository;
 import com.challenge.hotel_california.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -27,9 +31,13 @@ public class RoomService {
         return roomRepository.save(room);
     }
 
-    public List<Room> listAllRooms() {
-        List<Room> rooms = roomRepository.findAll();
-        return rooms;
+    public Page<RoomOutputGetListDTO> listAllRooms(Pageable pageable) {
+        Page<Room> rooms = roomRepository.findAll(pageable);
+        if (rooms.isEmpty()) {
+            throw new RoomListNotFoundException("No list rooms found");
+        }
+        Page<RoomOutputGetListDTO> getListDTOPage = rooms.map(RoomOutputGetListDTO::new);
+        return getListDTOPage;
     }
 
     public Room getDetailsOfASpecificRoom(Long id) {

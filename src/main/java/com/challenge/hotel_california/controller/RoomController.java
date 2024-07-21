@@ -5,14 +5,15 @@ import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.service.RoomService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rooms")
@@ -34,12 +35,8 @@ public class RoomController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RoomOutputGetListDTO>> listAllRooms() {
-        List<Room> rooms = roomService.listAllRooms();
-
-        List<RoomOutputGetListDTO> roomOutputGetListDTOS = rooms.stream()
-                .map(RoomOutputGetListDTO::new)
-                .collect(Collectors.toList());
+    public ResponseEntity<Page<RoomOutputGetListDTO>> listAllRooms(@PageableDefault(size = 5, sort = {"number"}) Pageable pageable) {
+        Page<RoomOutputGetListDTO> roomOutputGetListDTOS = roomService.listAllRooms(pageable);
 
         return ResponseEntity.ok().body(roomOutputGetListDTOS);
     }
