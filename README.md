@@ -19,14 +19,14 @@ Create a reservation management API for a hotel system.
    - Check room availability before creating a reservation.
    - Do not allow a reservation for a room that is already booked for the specified dates.
    - Update the room status to `BOOKED` when a reservation is created and to `AVAILABLE` when the reservation is canceled or completed.
-   - The reservation status can be `PENDING`, `CONFIRMED`, `CHECKED_IN`, `CANCELLED`.
+   - The reservation status can be `PENDING`, `CONFIRMED`, `CHECKED_IN`, `CANCELLED`. ✅**DONE**
 
 3. **Technologies and Tools:**
-   - **Spring Boot** for creating the API.
+   - **Spring Boot** for creating the API. ✅**DONE**
    - **Spring Validation** for validating input data.
-   - **Spring Data JPA** for database interaction.
-   - **Relational Database** (e.g., PostgreSQL, MySQL).
-   - **Flyway** for database migration.
+   - **Spring Data JPA** for database interaction. ✅**DONE**
+   - **Relational Database** (e.g., PostgreSQL, MySQL). ✅**DONE**
+   - **Flyway** for database migration. ✅**DONE**
    - **Integration Tests** with **Spring Test**.
    - **Error Handling** with `@ControllerAdvice`.
 
