@@ -28,10 +28,8 @@ public class RoomService {
     private BookingRepository bookingRepository;
 
     public Room addRoom(RoomEntryDTO roomEntryDTO) {
-        var foundRoomNumber = roomRepository.findByNumber(roomEntryDTO.number());
-        if(foundRoomNumber.isPresent()) {
-            throw new NumberRoomFoundException("Room Number already exist");
-        }
+        verifyIfNumberBookExists(roomEntryDTO);
+
         Room room = new Room(roomEntryDTO);
         return roomRepository.save(room);
     }
@@ -47,21 +45,17 @@ public class RoomService {
 
     public Room getDetailsOfASpecificRoom(Long id) {
         Room room = roomRepository.getReferenceById(id);
-        if (!roomRepository.existsById(id)) {
-            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
-        }
+        verifyIfRoomExistsById(id);
+
         return room;
     }
 
     public Room updateAnExistingRoom(RoomEntryDTO roomEntryDTO, Long id) {
-        var foundRoomNumber = roomRepository.findByNumber(roomEntryDTO.number());
-        if(foundRoomNumber.isPresent()) {
-            throw new NumberRoomFoundException("Room Number already exist");
-        }
+        verifyIfNumberBookExists(roomEntryDTO);
+
         Room room = roomRepository.getReferenceById(id);
-        if (!roomRepository.existsById(id)) {
-            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
-        }
+        verifyIfRoomExistsById(id);
+
         room.updateRoom(roomEntryDTO);
         return roomRepository.save(room);
     }
@@ -69,9 +63,8 @@ public class RoomService {
     public Room inactivateARoom(Long id) {
         Room room = roomRepository.getReferenceById(id);
 
-        if (!roomRepository.existsById(id)) {
-            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
-        }
+        verifyIfRoomExistsById(id);
+
         List<BookingStatus> optionsStatusBooking = Arrays.asList(BookingStatus.CANCELLED, BookingStatus.COMPLETED);
         List<Booking> bookingsRoom = bookingRepository.getBookingsById(id, optionsStatusBooking);
         if (!bookingsRoom.isEmpty()) {
@@ -80,5 +73,18 @@ public class RoomService {
         room.setStatus(RoomStatus.INACTIVE);
         roomRepository.save(room);
         return room;
+    }
+
+    private void verifyIfNumberBookExists(RoomEntryDTO roomEntryDTO) {
+        var foundRoomNumber = roomRepository.findByNumber(roomEntryDTO.number());
+        if (foundRoomNumber.isPresent()) {
+            throw new NumberRoomFoundException("Room Number already exist");
+        }
+    }
+
+    private void verifyIfRoomExistsById(Long id) {
+        if (!roomRepository.existsById(id)) {
+            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
+        }
     }
 }
