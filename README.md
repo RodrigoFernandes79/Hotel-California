@@ -23,7 +23,7 @@ Create a reservation management API for a hotel system.
 
 3. **Technologies and Tools:**
    - **Spring Boot** for creating the API. ✅**DONE**
-   - **Spring Validation** for validating input data.
+   - **Spring Validation** for validating input data. 🔄**In Progress**
    - **Spring Data JPA** for database interaction. ✅**DONE**
    - **Relational Database** (e.g., PostgreSQL, MySQL). ✅**DONE**
    - **Flyway** for database migration. ✅**DONE**

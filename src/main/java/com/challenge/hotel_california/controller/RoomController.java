@@ -4,6 +4,7 @@ import com.challenge.hotel_california.DTOs.*;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.service.RoomService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public class RoomController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<RoomOutputPostDTO> addRoom(@RequestBody RoomEntryDTO roomEntryDTO,
+    public ResponseEntity<RoomOutputPostDTO> addRoom(@Valid @RequestBody RoomEntryDTO roomEntryDTO,
                                                      UriComponentsBuilder uriComponentsBuilder) {
 
         Room room = roomService.addRoom(roomEntryDTO);
@@ -50,7 +51,7 @@ public class RoomController {
 
     @PatchMapping("/{id}")
     @Transactional
-    public ResponseEntity<RoomGetUpdateByIdDTO> updateAnExistingRoom(@RequestBody RoomEntryDTO roomEntryDTO,
+    public ResponseEntity<RoomGetUpdateByIdDTO> updateAnExistingRoom( @Valid @RequestBody RoomEntryDTO roomEntryDTO,
                                                                      @PathVariable Long id) {
         Room room = roomService.updateAnExistingRoom(roomEntryDTO, id);
         return ResponseEntity.ok().body(new RoomGetUpdateByIdDTO(room));
