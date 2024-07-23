@@ -43,7 +43,7 @@ public class GlobalExceptionsHandler {
     }
 
     @ExceptionHandler(RoomListNotFoundException.class)
-    public ResponseEntity<ResponseError> bookingsExistsException(RoomListNotFoundException ex) {
+    public ResponseEntity<ResponseError> roomListNotFoundException(RoomListNotFoundException ex) {
         ResponseError error = new ResponseError(
                 ex.getMessage(),
                 HttpStatus.NOT_FOUND,
@@ -61,6 +61,7 @@ public class GlobalExceptionsHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<DataFieldValidation>> dataField(MethodArgumentNotValidException e) {
         var errors = e.getFieldErrors();
@@ -72,5 +73,15 @@ public class GlobalExceptionsHandler {
         private DataFieldValidation(FieldError error) {
             this(error.getField(), error.getDefaultMessage());
         }
+    }
+
+    @ExceptionHandler(CustomersListNotFoundException.class)
+    public ResponseEntity<ResponseError> customersListNotFoundException(CustomersListNotFoundException ex) {
+        ResponseError error = new ResponseError(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }
