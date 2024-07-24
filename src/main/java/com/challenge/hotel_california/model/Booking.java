@@ -2,6 +2,7 @@ package com.challenge.hotel_california.model;
 
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
