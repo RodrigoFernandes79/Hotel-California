@@ -1,10 +1,12 @@
 package com.challenge.hotel_california.controller;
 
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
+import com.challenge.hotel_california.DTOs.CustomerGetByIdDTO;
 import com.challenge.hotel_california.DTOs.CustomerOutputDTO;
 import com.challenge.hotel_california.DTOs.CustomerOutputGetListDTO;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.service.CustomerService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ public class CustomerController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<CustomerOutputDTO> addCustomer(@Valid @RequestBody CustomerEntryDTO customerEntryDTO, UriComponentsBuilder uriComponentsBuilder) {
         Customer customer = customerService.addCustomer(customerEntryDTO);
 
@@ -36,4 +39,10 @@ public class CustomerController {
         return ResponseEntity.created(uri).body(new CustomerOutputDTO(customer));
 
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerGetByIdDTO> getDetailsOfASpecificCustomer(@PathVariable Long id) {
+        return ResponseEntity.ok().body(customerService.getDetailsOfASpecificCustomer(id));
+    }
+
 }

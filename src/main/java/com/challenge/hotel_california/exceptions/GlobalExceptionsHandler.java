@@ -92,4 +92,14 @@ public class GlobalExceptionsHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ResponseError> customerNotFoundException(CustomerNotFoundException ex) {
+        ResponseError error = new ResponseError(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }

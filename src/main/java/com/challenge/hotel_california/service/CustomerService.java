@@ -1,8 +1,10 @@
 package com.challenge.hotel_california.service;
 
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
+import com.challenge.hotel_california.DTOs.CustomerGetByIdDTO;
 import com.challenge.hotel_california.DTOs.CustomerOutputGetListDTO;
 import com.challenge.hotel_california.exceptions.CustomerExistsException;
+import com.challenge.hotel_california.exceptions.CustomerNotFoundException;
 import com.challenge.hotel_california.exceptions.CustomersListNotFoundException;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.repository.CustomerRepository;
@@ -40,5 +42,13 @@ public class CustomerService {
             throw new CustomerExistsException("Phone " + customerEntryDTO.phone() + " already exists in Database!");
         }
         return customerRepository.save(new Customer(customerEntryDTO));
+    }
+
+    public CustomerGetByIdDTO getDetailsOfASpecificCustomer(Long id) {
+        Customer customer = customerRepository.getReferenceById(id);
+        if (!customerRepository.existsById(customer.getId())) {
+            throw new CustomerNotFoundException("Customer " + id + " not found!");
+        }
+        return new CustomerGetByIdDTO(customer);
     }
 }
