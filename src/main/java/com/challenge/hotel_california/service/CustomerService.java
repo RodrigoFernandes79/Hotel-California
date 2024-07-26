@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,5 +62,25 @@ public class CustomerService {
         }
         customer.updateCustomer(customerUpdateEntryDTO);
         return new CustomerOutputDTO(customerRepository.save(customer));
+    }
+
+    public Map<String, String> deleteACustomer(Long id) {
+
+        Customer customer = customerRepository.getReferenceById(id);
+        if (!customerRepository.existsById(id)) {
+            throw new CustomerNotFoundException("Customer " + id + " not found!");
+        }
+        List<Booking> bookings = customer.getBookings();
+        List<Booking> statusRoom = bookings.stream()
+                .filter(s -> s.getStatus().equals(BookingStatus.CONFIRMED) || s.getStatus().equals(BookingStatus.CHECKED_IN))
+                .collect(Collectors.toList());
+        if (!statusRoom.isEmpty()) {
+            throw new RoomNotAvailableException("Customer cannot be updated due to active bookings with unavailable room status.");
+        }
+        customer.deleteCustomer();
+
+        Map<String, String> messageDelete = new HashMap<>();
+        messageDelete.put("message: ", "Customer " + customer.getName() + " deleted succesfully");
+        return messageDelete;
     }
 }
