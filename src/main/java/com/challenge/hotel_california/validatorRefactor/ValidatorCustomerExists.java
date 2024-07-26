@@ -1,8 +1,10 @@
 package com.challenge.hotel_california.validatorRefactor;
 
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
+import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.CustomerExistsException;
 import com.challenge.hotel_california.exceptions.CustomerNotFoundException;
+import com.challenge.hotel_california.exceptions.RoomNotAvailableException;
 import com.challenge.hotel_california.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

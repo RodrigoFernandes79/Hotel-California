@@ -11,4 +11,6 @@ public record CustomerOutputDTO(
     public CustomerOutputDTO(Customer customer) {
         this(customer.getId(), customer.getName(), customer.getEmail(), customer.getPhone());
     }
+
+
 }

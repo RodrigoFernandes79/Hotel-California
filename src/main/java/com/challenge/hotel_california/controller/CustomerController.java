@@ -1,9 +1,6 @@
 package com.challenge.hotel_california.controller;
 
-import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
-import com.challenge.hotel_california.DTOs.CustomerGetByIdDTO;
-import com.challenge.hotel_california.DTOs.CustomerOutputDTO;
-import com.challenge.hotel_california.DTOs.CustomerOutputGetListDTO;
+import com.challenge.hotel_california.DTOs.*;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.service.CustomerService;
 import jakarta.transaction.Transactional;
@@ -45,4 +42,11 @@ public class CustomerController {
         return ResponseEntity.ok().body(customerService.getDetailsOfASpecificCustomer(id));
     }
 
+    @PatchMapping("/{id}")
+    @Transactional
+    public ResponseEntity<CustomerOutputDTO> updateAnExistingCustomer(@Valid @RequestBody CustomerUpdateEntryDTO customerUpdateEntryDTO,
+                                                                      @PathVariable Long id) {
+        return ResponseEntity.ok().body(customerService.updateAnExistingCustomer(customerUpdateEntryDTO, id));
+
+    }
 }
