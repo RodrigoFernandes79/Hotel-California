@@ -51,9 +51,9 @@ public class RoomController {
 
     @PatchMapping("/{id}")
     @Transactional
-    public ResponseEntity<RoomGetUpdateByIdDTO> updateAnExistingRoom( @Valid @RequestBody RoomEntryDTO roomEntryDTO,
+    public ResponseEntity<RoomGetUpdateByIdDTO> updateAnExistingRoom(@Valid @RequestBody RoomEntryUpdateDTO roomEntryUpdateDTO,
                                                                      @PathVariable Long id) {
-        Room room = roomService.updateAnExistingRoom(roomEntryDTO, id);
+        Room room = roomService.updateAnExistingRoom(roomEntryUpdateDTO, id);
         return ResponseEntity.ok().body(new RoomGetUpdateByIdDTO(room));
     }
 

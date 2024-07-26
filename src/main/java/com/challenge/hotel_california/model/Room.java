@@ -1,6 +1,7 @@
 package com.challenge.hotel_california.model;
 
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
+import com.challenge.hotel_california.DTOs.RoomEntryUpdateDTO;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.enums.RoomType;
 import com.challenge.hotel_california.exceptions.RoomNotAvailableException;
@@ -39,15 +40,15 @@ public class Room {
         this.status = roomEntryDTO.status();
     }
 
-    public void updateRoom(RoomEntryDTO roomEntryDTO) {
+    public void updateRoom(RoomEntryUpdateDTO roomEntryUpdateDTO) {
         if (this.number != null) {
-            this.number = roomEntryDTO.number();
+            this.number = roomEntryUpdateDTO.number();
         }
         if (this.type != null) {
-            this.type = roomEntryDTO.type();
+            this.type = roomEntryUpdateDTO.type();
         }
         if (this.price != null) {
-            this.price = roomEntryDTO.price();
+            this.price = roomEntryUpdateDTO.price();
         }
         if (!this.status.equals(RoomStatus.AVAILABLE)) {
             throw new RoomNotAvailableException("Room cannot change status because it is not available.");
