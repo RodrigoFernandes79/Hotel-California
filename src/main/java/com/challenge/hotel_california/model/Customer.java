@@ -26,10 +26,13 @@ public class Customer {
     @OneToMany(mappedBy = "customerName", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Booking> bookings;
 
+    private Boolean isDeleted;
+
     public Customer(CustomerEntryDTO customerEntryDTO) {
         this.name = customerEntryDTO.name();
         this.email = customerEntryDTO.email();
         this.phone = customerEntryDTO.phone();
+        this.isDeleted = false;
     }
 
     public void updateCustomer(CustomerUpdateEntryDTO customerUpdateEntryDTO) {
@@ -42,5 +45,9 @@ public class Customer {
         if (customerUpdateEntryDTO.phone() != null) {
             this.phone = customerUpdateEntryDTO.phone();
         }
+    }
+
+    public void deleteCustomer() {
+        this.isDeleted = true;
     }
 }

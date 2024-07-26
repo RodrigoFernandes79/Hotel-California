@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/customers")
@@ -48,5 +49,11 @@ public class CustomerController {
                                                                       @PathVariable Long id) {
         return ResponseEntity.ok().body(customerService.updateAnExistingCustomer(customerUpdateEntryDTO, id));
 
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public Map<String, String> deleteACustomer(@PathVariable Long id) {
+        return customerService.deleteACustomer(id);
     }
 }
