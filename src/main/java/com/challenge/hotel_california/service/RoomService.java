@@ -1,6 +1,7 @@
 package com.challenge.hotel_california.service;
 
 import com.challenge.hotel_california.DTOs.RoomEntryDTO;
+import com.challenge.hotel_california.DTOs.RoomEntryUpdateDTO;
 import com.challenge.hotel_california.DTOs.RoomOutputGetListDTO;
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
@@ -28,7 +29,10 @@ public class RoomService {
     private BookingRepository bookingRepository;
 
     public Room addRoom(RoomEntryDTO roomEntryDTO) {
-        verifyIfNumberBookExists(roomEntryDTO);
+        var foundRoomNumber = roomRepository.findByNumber(roomEntryDTO.number());
+        if (foundRoomNumber.isPresent()) {
+            throw new NumberRoomFoundException("Room Number already exist");
+        }
 
         Room room = new Room(roomEntryDTO);
         return roomRepository.save(room);
@@ -50,13 +54,12 @@ public class RoomService {
         return room;
     }
 
-    public Room updateAnExistingRoom(RoomEntryDTO roomEntryDTO, Long id) {
-        verifyIfNumberBookExists(roomEntryDTO);
-
+    public Room updateAnExistingRoom(RoomEntryUpdateDTO roomEntryUpdateDTO, Long id) {
         Room room = roomRepository.getReferenceById(id);
-        verifyIfRoomExistsById(id);
-
-        room.updateRoom(roomEntryDTO);
+        if (!roomRepository.existsById(id) || !room.getId().equals(roomEntryUpdateDTO.id())) {
+            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database not found or not the same of ID: " + roomEntryUpdateDTO.id());
+        }
+        room.updateRoom(roomEntryUpdateDTO);
         return roomRepository.save(room);
     }
 
@@ -73,13 +76,6 @@ public class RoomService {
         room.setStatus(RoomStatus.INACTIVE);
         roomRepository.save(room);
         return room;
-    }
-
-    private void verifyIfNumberBookExists(RoomEntryDTO roomEntryDTO) {
-        var foundRoomNumber = roomRepository.findByNumber(roomEntryDTO.number());
-        if (foundRoomNumber.isPresent()) {
-            throw new NumberRoomFoundException("Room Number already exist");
-        }
     }
 
     private void verifyIfRoomExistsById(Long id) {
