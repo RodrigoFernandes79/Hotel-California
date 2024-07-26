@@ -1,7 +1,7 @@
 package com.challenge.hotel_california.model;
 
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.challenge.hotel_california.DTOs.CustomerUpdateEntryDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,5 +30,17 @@ public class Customer {
         this.name = customerEntryDTO.name();
         this.email = customerEntryDTO.email();
         this.phone = customerEntryDTO.phone();
+    }
+
+    public void updateCustomer(CustomerUpdateEntryDTO customerUpdateEntryDTO) {
+        if (customerUpdateEntryDTO.name() != null) {
+            this.name = customerUpdateEntryDTO.name();
+        }
+        if (customerUpdateEntryDTO.email() != null) {
+            this.email = customerUpdateEntryDTO.email();
+        }
+        if (customerUpdateEntryDTO.phone() != null) {
+            this.phone = customerUpdateEntryDTO.phone();
+        }
     }
 }
