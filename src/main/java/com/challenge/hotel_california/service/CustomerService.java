@@ -3,7 +3,6 @@ package com.challenge.hotel_california.service;
 import com.challenge.hotel_california.DTOs.*;
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.exceptions.CustomerNotFoundException;
-import com.challenge.hotel_california.exceptions.CustomersListNotFoundException;
 import com.challenge.hotel_california.exceptions.RoomNotAvailableException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Customer;
@@ -28,9 +27,7 @@ public class CustomerService {
 
     public Page<CustomerOutputGetListDTO> lisAllCustomers(Pageable pageable) {
         Page<Customer> findCustomers = customerRepository.findAll(pageable);
-        if (findCustomers.isEmpty()) {
-            throw new CustomersListNotFoundException("No customers found into Database!");
-        }
+        verifyCustomerAndThrowException(findCustomers);
         return findCustomers.map(CustomerOutputGetListDTO::new);
     }
 
@@ -42,41 +39,27 @@ public class CustomerService {
 
     public CustomerGetByIdDTO getDetailsOfASpecificCustomer(Long id) {
         Customer customer = customerRepository.getReferenceById(id);
-        if (!customerRepository.existsById(id)) {
-            throw new CustomerNotFoundException("Customer " + id + " not found!");
-        }
+        verifyCustomerByIdAndThrowException(id);
         return new CustomerGetByIdDTO(customer);
     }
 
     public CustomerOutputDTO updateAnExistingCustomer(CustomerUpdateEntryDTO customerUpdateEntryDTO, Long id) {
         Customer customer = customerRepository.getReferenceById(id);
-        if (!customerRepository.existsById(id) || !customer.getId().equals(customerUpdateEntryDTO.id())) {
-            throw new CustomerNotFoundException("Customer " + id + " not found or not the same of ID: " + customerUpdateEntryDTO.id());
+        verifyCustomerByIdAndThrowException(id);
+        if (!customer.getId().equals(customerUpdateEntryDTO.id())) {
+            throw new CustomerNotFoundException("Customer " + id + " not the same of ID: " + customerUpdateEntryDTO.id());
         }
-        List<Booking> bookings = customer.getBookings();
-        List<Booking> statusRoom = bookings.stream()
-                .filter(s -> s.getStatus().equals(BookingStatus.CONFIRMED) || s.getStatus().equals(BookingStatus.CHECKED_IN))
-                .collect(Collectors.toList());
-        if (!statusRoom.isEmpty()) {
-            throw new RoomNotAvailableException("Customer cannot be updated due to active bookings with unavailable room status.");
-        }
+        verifyStatusRoomAndThrowException(customer);
+
         customer.updateCustomer(customerUpdateEntryDTO);
         return new CustomerOutputDTO(customerRepository.save(customer));
     }
 
     public Map<String, String> deleteACustomer(Long id) {
-
         Customer customer = customerRepository.getReferenceById(id);
-        if (!customerRepository.existsById(id)) {
-            throw new CustomerNotFoundException("Customer " + id + " not found!");
-        }
-        List<Booking> bookings = customer.getBookings();
-        List<Booking> statusRoom = bookings.stream()
-                .filter(s -> s.getStatus().equals(BookingStatus.CONFIRMED) || s.getStatus().equals(BookingStatus.CHECKED_IN))
-                .collect(Collectors.toList());
-        if (!statusRoom.isEmpty()) {
-            throw new RoomNotAvailableException("Customer cannot be updated due to active bookings with unavailable room status.");
-        }
+        verifyCustomerByIdAndThrowException(id);
+        verifyStatusRoomAndThrowException(customer);
+
         customer.deleteCustomer();
 
         Map<String, String> messageDelete = new HashMap<>();
@@ -86,9 +69,29 @@ public class CustomerService {
 
     public Page<CustomerOutputGetActivatedListDTO> listAllActivatedCustomers(Pageable pageable) {
         Page<Customer> activesCustomer = customerRepository.findByIsDeletedIsFalse(pageable);
-        if (activesCustomer.isEmpty()) {
+        verifyCustomerAndThrowException(activesCustomer);
+        return activesCustomer.map(CustomerOutputGetActivatedListDTO::new);
+    }
+
+    private void verifyStatusRoomAndThrowException(Customer customer) {
+        List<Booking> bookings = customer.getBookings();
+        List<Booking> statusRoom = bookings.stream()
+                .filter(s -> s.getStatus().equals(BookingStatus.CONFIRMED) || s.getStatus().equals(BookingStatus.CHECKED_IN))
+                .collect(Collectors.toList());
+        if (!statusRoom.isEmpty()) {
+            throw new RoomNotAvailableException("Customer cannot be updated due to active bookings with unavailable room status.");
+        }
+    }
+
+    private void verifyCustomerByIdAndThrowException(Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new CustomerNotFoundException("Customer " + id + " not found!");
+        }
+    }
+
+    private void verifyCustomerAndThrowException(Page customer) {
+        if (customer.isEmpty()) {
             throw new CustomerNotFoundException("Customer  not found!");
         }
-        return activesCustomer.map(CustomerOutputGetActivatedListDTO::new);
     }
 }
