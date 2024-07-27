@@ -36,7 +36,7 @@ Create a reservation management API for a hotel system.
    - `POST /rooms`: Add a new room. ✅**DONE**
    - `PUT /rooms/{id}`: Update an existing room. ✅**DONE**
    - `DELETE /rooms/{id}`: Delete a room. ✅**DONE**
-   - `GET /bookings`: List all reservations.
+   - `GET /bookings`: List all reservations. ✅**DONE**
    - `GET /bookings/{id}`: Get details of a specific reservation.
    - `POST /bookings`: Create a new reservation. ✅**DONE**
    - `PUT /bookings/{id}`: Update an existing reservation.

@@ -102,4 +102,14 @@ public class GlobalExceptionsHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(BookingsNotFoundException.class)
+    public ResponseEntity<ResponseError> customerNotFoundException(BookingsNotFoundException ex) {
+        ResponseError error = new ResponseError(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }
