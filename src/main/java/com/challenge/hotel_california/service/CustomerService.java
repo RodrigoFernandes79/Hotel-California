@@ -32,7 +32,7 @@ public class CustomerService {
     }
 
     public Customer addCustomer(CustomerEntryDTO customerEntryDTO) {
-        verifyValidators.forEach(v -> v.verifyValidators(customerEntryDTO));
+        verifyValidators.forEach(v -> v.verifyCustomersValidators(customerEntryDTO));
 
         return customerRepository.save(new Customer(customerEntryDTO));
     }
