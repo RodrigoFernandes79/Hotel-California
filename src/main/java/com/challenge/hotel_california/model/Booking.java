@@ -34,6 +34,7 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;
+    private int daily;
     private BigDecimal totalPrice;
 
 
@@ -42,6 +43,7 @@ public class Booking {
         this.checkInDate = checkInDate;
         this.status = BookingStatus.CONFIRMED;
         this.room = room;
+        this.daily = 1;
         this.totalPrice = price;
     }
 }
