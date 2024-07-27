@@ -56,4 +56,8 @@ public class CustomerController {
     public Map<String, String> deleteACustomer(@PathVariable Long id) {
         return customerService.deleteACustomer(id);
     }
+    @GetMapping("/actives")
+    public ResponseEntity<Page<CustomerOutputGetActivatedListDTO>> listAllActivatedCustomers(@PageableDefault(size = 5, sort = {"name"}) Pageable pageable) {
+        return ResponseEntity.ok(customerService.listAllActivatedCustomers(pageable));
+    }
 }

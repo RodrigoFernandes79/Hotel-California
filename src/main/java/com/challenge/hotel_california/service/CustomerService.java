@@ -83,4 +83,12 @@ public class CustomerService {
         messageDelete.put("message: ", "Customer " + customer.getName() + " deleted succesfully");
         return messageDelete;
     }
+
+    public Page<CustomerOutputGetActivatedListDTO> listAllActivatedCustomers(Pageable pageable) {
+        Page<Customer> activesCustomer = customerRepository.findByIsDeletedIsFalse(pageable);
+        if (activesCustomer.isEmpty()) {
+            throw new CustomerNotFoundException("Customer  not found!");
+        }
+        return activesCustomer.map(CustomerOutputGetActivatedListDTO::new);
+    }
 }
