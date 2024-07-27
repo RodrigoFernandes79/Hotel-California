@@ -4,6 +4,7 @@ import com.challenge.hotel_california.DTOs.BookingEntryDTO;
 import com.challenge.hotel_california.DTOs.BookingOutputListDTO;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.BookingsNotFoundException;
+import com.challenge.hotel_california.exceptions.CustomerNotFoundException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.model.Room;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookingService {
@@ -45,6 +47,19 @@ public class BookingService {
         if (bookingsFound.isEmpty()) {
             throw new BookingsNotFoundException("No Bookings was found into Database!");
         }
+        return ResponseEntity.ok().body(bookingsFound.map(BookingOutputListDTO::new));
+    }
+
+    public ResponseEntity<Page<BookingOutputListDTO>> listAllReservationsByCustomer(Pageable pageable, String customerName) {
+        Optional customer = customerRepository.findByNameContainingIgnoreCase(customerName);
+        if (customer.isEmpty()) {
+            throw new CustomerNotFoundException("Customer " + customerName + " not found!");
+        }
+        Page<Booking> bookingsFound = bookingRepository.findAllByCustomerNameById(pageable, customerName);
+        if (bookingsFound.isEmpty()) {
+            throw new BookingsNotFoundException("No Bookings was found into Database!");
+        }
+
         return ResponseEntity.ok().body(bookingsFound.map(BookingOutputListDTO::new));
     }
 }
