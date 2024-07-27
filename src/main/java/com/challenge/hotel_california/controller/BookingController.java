@@ -4,6 +4,7 @@ import com.challenge.hotel_california.DTOs.BookingEntryDTO;
 import com.challenge.hotel_california.DTOs.BookingOutputDTO;
 import com.challenge.hotel_california.DTOs.BookingOutputListDTO;
 import com.challenge.hotel_california.model.Booking;
+import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.service.BookingService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -39,5 +40,11 @@ public class BookingController {
     public ResponseEntity<Page<BookingOutputListDTO>> listAllReservations(@PageableDefault(sort = {"customerName"}, size = 5) Pageable pageable) {
         return bookingService.listAllReservations(pageable);
 
+    }
+
+    @GetMapping("/customer_name")
+    public ResponseEntity<Page<BookingOutputListDTO>> listAllReservationsByCustomer(@PageableDefault(sort = {"customerName"}, size = 5) Pageable pageable,
+                                                                                      @RequestParam("customerName") String customerName) {
+        return bookingService.listAllReservationsByCustomer(pageable, customerName);
     }
 }

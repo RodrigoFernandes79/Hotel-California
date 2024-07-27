@@ -15,4 +15,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional findByPhone(String phone);
 
     Page<Customer> findByIsDeletedIsFalse(Pageable pageable);
+
+    Optional findByNameContainingIgnoreCase(String customerName);
 }
