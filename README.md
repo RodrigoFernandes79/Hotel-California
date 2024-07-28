@@ -39,7 +39,8 @@ Create a reservation management API for a hotel system.
    - `GET /bookings`: List all reservations. ✅**DONE**
    - `GET /bookings/customer_name`: Get details of List reservation by customer name.✅**DONE**
    - `POST /bookings`: Create a new reservation. ✅**DONE**
-   - `PUT /bookings/{id}`: Update an existing reservation.
+   - `PUT /bookings/{id}`: Update an existing reservation. ✅**DONE**
+   - `PUT /bookings/check_out/{id}`: Check out a reservation.
    - `DELETE /bookings/{id}`: Cancel a reservation.
    - `GET /customers`: List all customers. ✅**DONE**
    - `GET /customers/{id}`: Get details of a specific customer. ✅**DONE**

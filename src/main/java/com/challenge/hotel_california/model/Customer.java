@@ -35,6 +35,7 @@ public class Customer {
         this.isDeleted = false;
     }
 
+
     public void updateCustomer(CustomerUpdateEntryDTO customerUpdateEntryDTO) {
         if (customerUpdateEntryDTO.name() != null) {
             this.name = customerUpdateEntryDTO.name();

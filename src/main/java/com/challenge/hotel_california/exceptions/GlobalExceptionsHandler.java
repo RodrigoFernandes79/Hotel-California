@@ -112,4 +112,13 @@ public class GlobalExceptionsHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(BookingCheckInDateNotBeforeException.class)
+    public ResponseEntity<ResponseError> customerExistsException(BookingCheckInDateNotBeforeException ex) {
+        ResponseError error = new ResponseError(
+                ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 }
