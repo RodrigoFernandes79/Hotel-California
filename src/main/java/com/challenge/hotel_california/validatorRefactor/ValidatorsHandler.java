@@ -2,6 +2,7 @@ package com.challenge.hotel_california.validatorRefactor;
 
 import com.challenge.hotel_california.DTOs.BookingEntryDTO;
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
+import com.challenge.hotel_california.DTOs.RoomEntryUpdateDTO;
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.*;
@@ -64,4 +65,21 @@ public class ValidatorsHandler implements IValidator {
 
     }
 
+    @Override
+    public void verifyRoomUpdateValidators(Long id, Room room, RoomEntryUpdateDTO roomEntryUpdateDTO) {
+        if (!roomRepository.existsById(id)) {
+            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database");
+        }
+        if (!room.getId().equals(roomEntryUpdateDTO.id())) {
+            throw new RoomNotFoundException("Room " + id + " not the same of ID: " + roomEntryUpdateDTO.id());
+        }
+        if (!room.getNumber().equals(roomEntryUpdateDTO.number())) {
+            throw new NumberRoomFoundException("Room " + roomEntryUpdateDTO.number() + " already Exists");
+        }
+        List<BookingStatus> optionsStatusBooking = Arrays.asList(BookingStatus.CANCELLED, BookingStatus.COMPLETED);
+        List<Booking> bookingsRoom = bookingRepository.getBookingsById(id, optionsStatusBooking);
+        if (!bookingsRoom.isEmpty()) {
+            throw new BookingsExistsException("There are active bookings for this room.");
+        }
+    }
 }
