@@ -1,9 +1,6 @@
 package com.challenge.hotel_california.controller;
 
-import com.challenge.hotel_california.DTOs.BookingEntryDTO;
-import com.challenge.hotel_california.DTOs.BookingOutputDTO;
-import com.challenge.hotel_california.DTOs.BookingOutputListDTO;
-import com.challenge.hotel_california.DTOs.BookingUpdateEntryDTO;
+import com.challenge.hotel_california.DTOs.*;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.service.BookingService;
 import jakarta.transaction.Transactional;
@@ -52,5 +49,11 @@ public class BookingController {
     @Transactional
     public ResponseEntity<BookingOutputDTO> updateReservation(@Valid @RequestBody BookingUpdateEntryDTO bookingUpdateEntryDTO, @PathVariable Long id) {
         return ResponseEntity.ok().body(bookingService.updateReservation(bookingUpdateEntryDTO, id));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<BookingDeleteStatusDTO> deleteAReservation(@PathVariable long id) {
+        return ResponseEntity.ok().body(bookingService.deleteAReservation(id));
     }
 }

@@ -3,6 +3,7 @@ package com.challenge.hotel_california.model;
 import com.challenge.hotel_california.DTOs.BookingUpdateEntryDTO;
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
+import com.challenge.hotel_california.exceptions.BookingStatusException;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -42,7 +43,7 @@ public class Booking {
 
     public Booking(Customer customer, LocalDateTime checkInDate, Room room, BigDecimal price) {
         this.customerName = customer;
-        this.checkInDate = checkInDate;
+        this.checkInDate = checkInDate.withHour(14);
         this.status = BookingStatus.CONFIRMED;
         this.room = room;
         this.daily = 1;
@@ -58,14 +59,17 @@ public class Booking {
         }
         if (bookingUpdateEntryDTO.status() != null) {
             this.status = bookingUpdateEntryDTO.status();
-            if (this.status.equals(BookingStatus.COMPLETED) || this.status.equals(BookingStatus.CANCELLED)) {
+            if (this.status.equals(BookingStatus.COMPLETED) || this.status.equals(BookingStatus.PENDING)) {
                 room.setStatus(RoomStatus.AVAILABLE);
+            }
+            if (bookingUpdateEntryDTO.status().equals(BookingStatus.CANCELLED)) {
+                throw new BookingStatusException("Not allowed to cancel a reservation");
             }
             if (this.status.equals(BookingStatus.CONFIRMED) || this.status.equals(BookingStatus.CHECKED_IN)) {
                 room.setStatus(RoomStatus.BOOKED);
             }
         }
-        if (bookingUpdateEntryDTO.roomId() != null && !this.room.getId().equals(room.getId())) {
+        if (bookingUpdateEntryDTO.roomId() != null) {
             this.room = roomFound;
         }
     }

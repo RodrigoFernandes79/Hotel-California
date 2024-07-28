@@ -13,9 +13,11 @@ import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.BookingRepository;
 import com.challenge.hotel_california.repository.CustomerRepository;
 import com.challenge.hotel_california.repository.RoomRepository;
+import com.challenge.hotel_california.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -100,6 +102,10 @@ public class ValidatorsHandler implements IValidator {
         if (!bookingFound.getId().equals(bookingUpdateEntryDTO.id())) {
             throw new BookingsNotFoundException("Booking " + id + " not the same of id: " + bookingFound.getId() + " found in database");
         }
+        var bookingStatus = bookingFound.getStatus();
+        if (bookingStatus.equals(BookingStatus.COMPLETED) || bookingStatus.equals(BookingStatus.CANCELLED)) {
+            throw new BookingStatusException("Cannot change a completed or cancelled reservation!");
+        }
         // Verifies that the new check-in date is at least 24 hours later than the current check-in date
         LocalDateTime currentCheckInDate = bookingFound.getCheckInDate();
         LocalDateTime newCheckInDate = bookingUpdateEntryDTO.checkInDate();
@@ -112,9 +118,32 @@ public class ValidatorsHandler implements IValidator {
         if (!customerRepository.existsById(bookingUpdateEntryDTO.customerId()) || customerFound.getIsDeleted()) {
             throw new CustomerNotFoundException("Customer " + bookingUpdateEntryDTO.customerId() + " not exists into Database or has been deleted");
         }
-        if (!customerFound.getId().equals(bookingUpdateEntryDTO.customerId())) {
-            throw new CustomerNotFoundException("Customer " + bookingUpdateEntryDTO.customerId() + " not the same of id: " + customerFound.getId() + "found in database");
-        }
-
     }
+
+    @Override
+    public void verifyBookingsDeleteValidators(Long id, Booking bookingFound) {
+        if (!bookingRepository.existsById(id)) {
+            throw new BookingsNotFoundException("Booking not found");
+        }
+        var bookingStatusFound = bookingFound.getStatus();
+        if (bookingStatusFound.equals(BookingStatus.CHECKED_IN)) {
+            throw new BookingStatusException("This Reservation cannot be cancelled case its made a Check in!");
+        }
+        if (bookingStatusFound.equals(BookingStatus.COMPLETED) || bookingStatusFound.equals(BookingStatus.CANCELLED)) {
+            throw new BookingStatusException("Cannot cancel a completed or cancelled reservation!");
+        }
+        if (bookingStatusFound.equals(BookingStatus.CONFIRMED)) {
+            var checkInCurrentDate = bookingFound.getCheckInDate();
+            var cancelDate = LocalDateTime.now();
+            var differenceInHours = Duration.between(cancelDate, checkInCurrentDate).toHours();
+            if (differenceInHours < 48) {
+                throw new BookingStatusException("Cannot cancel a reservation under 48h of check-in Date");
+            }
+            bookingFound.setStatus(BookingStatus.CANCELLED);
+            bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
+            BookingService bookingService = new BookingService();
+            bookingService.calculateTax(bookingFound, null);
+        }
+    }
+
 }

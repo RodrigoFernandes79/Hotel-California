@@ -1,9 +1,6 @@
 package com.challenge.hotel_california.service;
 
-import com.challenge.hotel_california.DTOs.BookingEntryDTO;
-import com.challenge.hotel_california.DTOs.BookingOutputDTO;
-import com.challenge.hotel_california.DTOs.BookingOutputListDTO;
-import com.challenge.hotel_california.DTOs.BookingUpdateEntryDTO;
+import com.challenge.hotel_california.DTOs.*;
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.BookingsNotFoundException;
@@ -24,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookingService {
@@ -56,8 +52,8 @@ public class BookingService {
     }
 
     public ResponseEntity<Page<BookingOutputListDTO>> listAllReservationsByCustomer(Pageable pageable, String customerName) {
-        Optional customer = customerRepository.findByNameContainingIgnoreCase(customerName);
-        if (customer.isEmpty()) {
+        List<Customer> customerFound = customerRepository.findByNameContainingIgnoreCase(customerName);
+        if (customerFound.isEmpty()) {
             throw new CustomerNotFoundException("Customer " + customerName + " not found!");
         }
         Page<Booking> bookingsFound = bookingRepository.findAllByCustomerNameById(pageable, customerName);
@@ -83,7 +79,18 @@ public class BookingService {
         return new BookingOutputDTO(bookingRepository.save(bookingFound));
     }
 
-    private void calculateTax(Booking bookingFound, BookingUpdateEntryDTO bookingUpdateEntryDTO) {
+    public BookingDeleteStatusDTO deleteAReservation(long id) {
+        Booking bookingFound = bookingRepository.getReferenceById(id);
+
+        verifyValidators.forEach(v -> v.verifyBookingsDeleteValidators(id, bookingFound));
+        bookingFound.setStatus(BookingStatus.CANCELLED);
+        bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
+
+        return new BookingDeleteStatusDTO(bookingFound);
+
+    }
+
+    public void calculateTax(Booking bookingFound, BookingUpdateEntryDTO bookingUpdateEntryDTO) {
         BigDecimal totalPrice = bookingFound.getRoom().getPrice();
 
         if (bookingFound.getStatus().equals(BookingStatus.CANCELLED)) {
@@ -100,4 +107,5 @@ public class BookingService {
 
         bookingFound.setTotalPrice(totalPrice);
     }
+
 }

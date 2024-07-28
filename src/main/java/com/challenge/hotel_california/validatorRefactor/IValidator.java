@@ -12,7 +12,12 @@ public interface IValidator {
     void verifyCustomersValidators(CustomerEntryDTO customerEntryDTO);
 
     void verifyValidatorsBookings(BookingEntryDTO bookingEntryDTO, Room room, Customer customer);
+
     void verifyRoomUpdateValidators(Long id, Room room, RoomEntryUpdateDTO roomEntryUpdateDTO);
+
     void verifyBookingsUpdateValidators(BookingUpdateEntryDTO bookingUpdateEntryDTO, Room roomFound,
                                         Booking bookingFound, Customer customerFound, Long id);
+
+    void verifyBookingsDeleteValidators(Long id, Booking bookingFound);
+
 }

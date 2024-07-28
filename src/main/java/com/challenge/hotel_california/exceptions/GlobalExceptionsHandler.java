@@ -121,4 +121,12 @@ public class GlobalExceptionsHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(BookingStatusException.class)
+    public ResponseEntity<ResponseError> customerExistsException(BookingStatusException ex) {
+        ResponseError error = new ResponseError(
+                ex.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 }
