@@ -13,6 +13,7 @@ import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.BookingRepository;
 import com.challenge.hotel_california.repository.RoomRepository;
+import com.challenge.hotel_california.validatorRefactor.IValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,8 @@ public class RoomService {
     private RoomRepository roomRepository;
     @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
+    private List<IValidator> verifyValidators;
 
     public Room addRoom(RoomEntryDTO roomEntryDTO) {
         var foundRoomNumber = roomRepository.findByNumber(roomEntryDTO.number());
@@ -56,9 +59,8 @@ public class RoomService {
 
     public Room updateAnExistingRoom(RoomEntryUpdateDTO roomEntryUpdateDTO, Long id) {
         Room room = roomRepository.getReferenceById(id);
-        if (!roomRepository.existsById(id) || !room.getId().equals(roomEntryUpdateDTO.id())) {
-            throw new RoomNotFoundException("Room " + id + " Not Found in Hotel California Database not found or not the same of ID: " + roomEntryUpdateDTO.id());
-        }
+
+        verifyValidators.forEach(v -> v.verifyRoomUpdateValidators(id, room, roomEntryUpdateDTO));
         room.updateRoom(roomEntryUpdateDTO);
         return roomRepository.save(room);
     }
