@@ -18,7 +18,7 @@ Create a reservation management API for a hotel system.
 2. **Business Rules:**
    - Check room availability before creating a reservation. ✅**DONE**
    - Do not allow a reservation for a room that is already booked for the specified dates. ✅**DONE**
-   - Update the room status to `BOOKED` when a reservation is created and to `AVAILABLE` when the reservation is canceled or completed.
+   - Update the room status to `BOOKED` when a reservation is created and to `AVAILABLE` when the reservation is canceled or completed. ✅**DONE**
    - The reservation status can be `PENDING`, `CONFIRMED`, `CHECKED_IN`, `CANCELLED`. ✅**DONE**
 
 3. **Technologies and Tools:**
@@ -40,8 +40,8 @@ Create a reservation management API for a hotel system.
    - `GET /bookings/customer_name`: Get details of List reservation by customer name.✅**DONE**
    - `POST /bookings`: Create a new reservation. ✅**DONE**
    - `PUT /bookings/{id}`: Update an existing reservation. ✅**DONE**
-   - `PUT /bookings/check_out/{id}`: Check out a reservation.
-   - `DELETE /bookings/{id}`: Cancel a reservation.
+   - `PUT /bookings/check_out/{id}`: Check out a reservation. ✅**DONE**
+   - `DELETE /bookings/{id}`: Cancel a reservation. ✅**DONE**
    - `GET /customers`: List all customers. ✅**DONE**
    - `GET /customers/{id}`: Get details of a specific customer. ✅**DONE**
    - `POST /customers`: Add a new customer. ✅**DONE**
