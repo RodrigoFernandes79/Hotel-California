@@ -16,8 +16,8 @@ Create a reservation management API for a hotel system.
      - A room can have multiple reservations over time but cannot be reserved for more than one reservation at the same time. ✅**DONE**
 
 2. **Business Rules:**
-   - Check room availability before creating a reservation.
-   - Do not allow a reservation for a room that is already booked for the specified dates.
+   - Check room availability before creating a reservation. ✅**DONE**
+   - Do not allow a reservation for a room that is already booked for the specified dates. ✅**DONE**
    - Update the room status to `BOOKED` when a reservation is created and to `AVAILABLE` when the reservation is canceled or completed.
    - The reservation status can be `PENDING`, `CONFIRMED`, `CHECKED_IN`, `CANCELLED`. ✅**DONE**
 
