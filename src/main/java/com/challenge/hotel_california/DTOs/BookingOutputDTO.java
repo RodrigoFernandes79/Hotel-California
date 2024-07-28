@@ -20,7 +20,7 @@ public record BookingOutputDTO(
         BigDecimal totalPrice
 ) {
     public BookingOutputDTO(Booking booking) {
-        this(booking.getId(), booking.getCustomerName().getName(), booking.getCheckInDate(),
+        this(booking.getId(), booking.getCustomerName().getName(), booking.getCheckInDate().withHour(14),
                 booking.getCheckOutDate(), booking.getStatus(), booking.getRoom().getNumber(), booking.getDaily(), booking.getTotalPrice());
     }
 }

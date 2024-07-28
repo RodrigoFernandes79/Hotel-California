@@ -1,6 +1,7 @@
 package com.challenge.hotel_california.validatorRefactor;
 
 import com.challenge.hotel_california.DTOs.BookingEntryDTO;
+import com.challenge.hotel_california.DTOs.BookingUpdateEntryDTO;
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
 import com.challenge.hotel_california.DTOs.RoomEntryUpdateDTO;
 import com.challenge.hotel_california.enums.BookingStatus;
@@ -15,6 +16,7 @@ import com.challenge.hotel_california.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -81,5 +83,38 @@ public class ValidatorsHandler implements IValidator {
         if (!bookingsRoom.isEmpty()) {
             throw new BookingsExistsException("There are active bookings for this room.");
         }
+    }
+
+    @Override
+    public void verifyBookingsUpdateValidators(BookingUpdateEntryDTO bookingUpdateEntryDTO, Room roomFound,
+                                               Booking bookingFound, Customer customerFound, Long id) {
+        if (!roomRepository.existsById(bookingUpdateEntryDTO.roomId())) {
+            throw new RoomNotFoundException("Room " + bookingUpdateEntryDTO.roomId() + " Not Found!");
+        }
+        if (roomFound.getStatus().equals(RoomStatus.BOOKED) && !roomFound.getId().equals(bookingFound.getRoom().getId())) {
+            throw new BookingsExistsException("This room is already booked!");
+        }
+        if (!bookingRepository.existsById(bookingUpdateEntryDTO.id())) {
+            throw new BookingsNotFoundException("Booking not found!");
+        }
+        if (!bookingFound.getId().equals(bookingUpdateEntryDTO.id())) {
+            throw new BookingsNotFoundException("Booking " + id + " not the same of id: " + bookingFound.getId() + " found in database");
+        }
+        // Verifies that the new check-in date is at least 24 hours later than the current check-in date
+        LocalDateTime currentCheckInDate = bookingFound.getCheckInDate();
+        LocalDateTime newCheckInDate = bookingUpdateEntryDTO.checkInDate();
+        if (newCheckInDate.isAfter(currentCheckInDate.plusHours(24)) || currentCheckInDate.equals(newCheckInDate)) {
+            bookingFound.setCheckInDate(newCheckInDate);
+        } else {
+            throw new BookingCheckInDateNotBeforeException("Check-in date can only be changed to at least 24 hours later.");
+        }
+
+        if (!customerRepository.existsById(bookingUpdateEntryDTO.customerId()) || customerFound.getIsDeleted()) {
+            throw new CustomerNotFoundException("Customer " + bookingUpdateEntryDTO.customerId() + " not exists into Database or has been deleted");
+        }
+        if (!customerFound.getId().equals(bookingUpdateEntryDTO.customerId())) {
+            throw new CustomerNotFoundException("Customer " + bookingUpdateEntryDTO.customerId() + " not the same of id: " + customerFound.getId() + "found in database");
+        }
+
     }
 }

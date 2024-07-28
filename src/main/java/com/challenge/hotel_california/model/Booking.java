@@ -1,6 +1,8 @@
 package com.challenge.hotel_california.model;
 
+import com.challenge.hotel_california.DTOs.BookingUpdateEntryDTO;
 import com.challenge.hotel_california.enums.BookingStatus;
+import com.challenge.hotel_california.enums.RoomStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -45,5 +47,26 @@ public class Booking {
         this.room = room;
         this.daily = 1;
         this.totalPrice = price;
+    }
+
+    public void updateBooking(Customer customerFound, BookingUpdateEntryDTO bookingUpdateEntryDTO, Room roomFound) {
+        if (bookingUpdateEntryDTO.customerId() != null) {
+            this.customerName = customerFound;
+        }
+        if (bookingUpdateEntryDTO.checkInDate() != null) {
+            this.checkInDate = bookingUpdateEntryDTO.checkInDate().withHour(14);
+        }
+        if (bookingUpdateEntryDTO.status() != null) {
+            this.status = bookingUpdateEntryDTO.status();
+            if (this.status.equals(BookingStatus.COMPLETED) || this.status.equals(BookingStatus.CANCELLED)) {
+                room.setStatus(RoomStatus.AVAILABLE);
+            }
+            if (this.status.equals(BookingStatus.CONFIRMED) || this.status.equals(BookingStatus.CHECKED_IN)) {
+                room.setStatus(RoomStatus.BOOKED);
+            }
+        }
+        if (bookingUpdateEntryDTO.roomId() != null && !this.room.getId().equals(room.getId())) {
+            this.room = roomFound;
+        }
     }
 }

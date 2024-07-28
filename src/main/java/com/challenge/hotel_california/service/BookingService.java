@@ -1,7 +1,10 @@
 package com.challenge.hotel_california.service;
 
 import com.challenge.hotel_california.DTOs.BookingEntryDTO;
+import com.challenge.hotel_california.DTOs.BookingOutputDTO;
 import com.challenge.hotel_california.DTOs.BookingOutputListDTO;
+import com.challenge.hotel_california.DTOs.BookingUpdateEntryDTO;
+import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.BookingsNotFoundException;
 import com.challenge.hotel_california.exceptions.CustomerNotFoundException;
@@ -18,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +43,7 @@ public class BookingService {
 
         verifyValidators.forEach(v -> v.verifyValidatorsBookings(bookingEntryDTO, room, customer));
         room.setStatus(RoomStatus.BOOKED);
-        Booking booking = new Booking(customer, bookingEntryDTO.checkInDate().withHour(14), room, room.getPrice());//check in is always as 14 o clock
+        Booking booking = new Booking(customer, bookingEntryDTO.checkInDate(), room, room.getPrice());//check in is always as 14 o clock
         return bookingRepository.save(booking);
     }
 
@@ -61,5 +66,38 @@ public class BookingService {
         }
 
         return ResponseEntity.ok().body(bookingsFound.map(BookingOutputListDTO::new));
+    }
+
+    public BookingOutputDTO updateReservation(BookingUpdateEntryDTO bookingUpdateEntryDTO, Long id) {
+
+        Room roomFound = roomRepository.getReferenceById(bookingUpdateEntryDTO.roomId());
+        Customer customerFound = customerRepository.getReferenceById(bookingUpdateEntryDTO.customerId());
+        Booking bookingFound = bookingRepository.getReferenceById(id);
+
+        verifyValidators.forEach(v -> v.verifyBookingsUpdateValidators(bookingUpdateEntryDTO, roomFound,
+                bookingFound, customerFound, id));
+
+        bookingFound.updateBooking(customerFound, bookingUpdateEntryDTO, roomFound);
+        calculateTax(bookingFound, bookingUpdateEntryDTO);
+
+        return new BookingOutputDTO(bookingRepository.save(bookingFound));
+    }
+
+    private void calculateTax(Booking bookingFound, BookingUpdateEntryDTO bookingUpdateEntryDTO) {
+        BigDecimal totalPrice = bookingFound.getRoom().getPrice();
+
+        if (bookingFound.getStatus().equals(BookingStatus.CANCELLED)) {
+            // Applies a 20% cancellation fee
+            totalPrice = totalPrice.multiply(BigDecimal.valueOf(0.20));
+        } else if (bookingUpdateEntryDTO.checkInDate() != null &&
+                bookingFound.getCheckInDate().isEqual(bookingUpdateEntryDTO.checkInDate())) {
+            // Applies a 20% change fee plus the room price if the check-in date is changed
+            totalPrice = totalPrice.multiply(BigDecimal.valueOf(1.20));
+        }
+
+        // Rounds to two decimal places
+        totalPrice = totalPrice.setScale(2, RoundingMode.HALF_UP);
+
+        bookingFound.setTotalPrice(totalPrice);
     }
 }
