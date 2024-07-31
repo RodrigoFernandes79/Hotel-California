@@ -3,8 +3,10 @@ package com.challenge.hotel_california.service;
 import com.challenge.hotel_california.DTOs.*;
 import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
+import com.challenge.hotel_california.exceptions.BookingCheckInDateNotBeforeException;
 import com.challenge.hotel_california.exceptions.BookingsNotFoundException;
 import com.challenge.hotel_california.exceptions.CustomerNotFoundException;
+import com.challenge.hotel_california.exceptions.RoomNotAvailableException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.model.Room;
@@ -20,6 +22,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -87,6 +92,47 @@ public class BookingService {
         bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
 
         return new BookingDeleteStatusDTO(bookingFound);
+
+    }
+
+    public void updateCheckOutDate(Long id) {
+        Booking bookingFound = bookingRepository.getReferenceById(id);
+        if (!bookingRepository.existsById(id)) {
+            throw new BookingsNotFoundException("No Booking was found");
+
+        }
+        if (bookingFound.getStatus().equals(BookingStatus.COMPLETED) || bookingFound.getStatus().equals(BookingStatus.CANCELLED)) {
+            throw new RoomNotAvailableException("Cannot cancel a completed or cancelled reservation!");
+        }
+
+        LocalTime checkInTime = LocalTime.of(14, 0);  // 14:00
+        LocalTime checkOutTime = LocalTime.of(8, 0);  // 08:00
+
+        var checkInDate = bookingFound.getCheckInDate().with(checkInTime);
+        var checkoutDate = LocalDateTime.now().plusDays(3);
+        var endOfCheckoutDate = LocalDateTime.now().plusDays(3).with(checkOutTime);
+        var totalPrice = bookingFound.getRoom().getPrice();
+
+        var differenceInDays = Duration.between(checkInDate, endOfCheckoutDate).toDays();
+
+        if (differenceInDays < 0) {
+            throw new BookingCheckInDateNotBeforeException("Check out date cannot be before the check in date");
+
+        } else if (differenceInDays == 0) {
+            bookingFound.setTotalPrice(totalPrice);
+
+        } else {
+            var differenceInHours = Duration.between(endOfCheckoutDate, endOfCheckoutDate).toHours();
+            if (differenceInHours <= 0) {
+                bookingFound.setTotalPrice(totalPrice.multiply(BigDecimal.valueOf(differenceInDays)));
+            } else {
+                bookingFound.setTotalPrice(totalPrice.multiply(BigDecimal.valueOf(differenceInDays)).add(totalPrice));
+            }
+        }
+        bookingFound.setCheckOutDate(endOfCheckoutDate);
+        bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
+        bookingFound.setStatus(BookingStatus.COMPLETED);
+
 
     }
 

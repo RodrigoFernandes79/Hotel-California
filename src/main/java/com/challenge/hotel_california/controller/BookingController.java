@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/bookings")
@@ -54,6 +57,18 @@ public class BookingController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<BookingDeleteStatusDTO> deleteAReservation(@PathVariable long id) {
-        return ResponseEntity.ok().body(bookingService.deleteAReservation(id));
+        bookingService.deleteAReservation(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PatchMapping("checkout/{id}")
+    @Transactional
+    public ResponseEntity<Map<String, String>> updateCheckOutDate(@PathVariable Long id) {
+
+        bookingService.updateCheckOutDate(id);
+
+        Map<String, String> message = new HashMap<>();
+        message.put("message: ", "check out completed successfully");
+        return ResponseEntity.ok().body(message);
     }
 }
