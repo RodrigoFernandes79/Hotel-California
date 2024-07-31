@@ -60,6 +60,13 @@ public class ValidatorsHandler implements IValidator {
         if (!customerRepository.existsById(bookingEntryDTO.customerId()) || customer.getIsDeleted()) {
             throw new CustomerNotFoundException("Customer" + bookingEntryDTO.customerId() + " does not exist or has been deleted");
         }
+
+        List<BookingStatus> optionsStatusBooking = Arrays.asList(BookingStatus.CANCELLED, BookingStatus.COMPLETED);
+        List<Booking> bookingsRoom = bookingRepository.getBookingsById(bookingEntryDTO.roomId(), optionsStatusBooking);
+        if (!bookingsRoom.isEmpty()) {
+            throw new BookingsExistsException("There are active bookings for this room.");
+        }
+
     }
 
     @Override
@@ -70,9 +77,8 @@ public class ValidatorsHandler implements IValidator {
         if (!room.getId().equals(roomEntryUpdateDTO.id())) {
             throw new RoomNotFoundException("Room " + id + " not the same of ID: " + roomEntryUpdateDTO.id());
         }
-        var numberFound = roomRepository.findByNumber(roomEntryUpdateDTO.number());
-        if (numberFound.isPresent() && !room.getNumber().equals(roomEntryUpdateDTO.number())) {
-            throw new NumberRoomFoundException("Room " + room.getNumber() + " already Exists other room with this number");
+        if (!room.getNumber().equals(roomEntryUpdateDTO.number())) {
+            throw new NumberRoomFoundException("Room " + roomEntryUpdateDTO.number() + " already Exists");
         }
         List<BookingStatus> optionsStatusBooking = Arrays.asList(BookingStatus.CANCELLED, BookingStatus.COMPLETED);
         List<Booking> bookingsRoom = bookingRepository.getBookingsById(id, optionsStatusBooking);
