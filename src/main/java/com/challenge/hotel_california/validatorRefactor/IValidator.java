@@ -19,5 +19,6 @@ public interface IValidator {
                                         Booking bookingFound, Customer customerFound, Long id);
 
     void verifyBookingsDeleteValidators(Long id, Booking bookingFound);
+    void verifyBookingsUpdateCheckOutValidators(Long id, Booking bookingFound);
 
 }
