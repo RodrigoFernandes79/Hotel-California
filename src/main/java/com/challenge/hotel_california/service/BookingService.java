@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -87,6 +88,19 @@ public class BookingService {
         bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
 
         return new BookingDeleteStatusDTO(bookingFound);
+
+    }
+
+    public void updateCheckOutDate(Long id) {
+        Booking bookingFound = bookingRepository.getReferenceById(id);
+
+        verifyValidators.forEach(v -> v.verifyBookingsUpdateCheckOutValidators(id, bookingFound));
+        var checkoutDate = LocalDateTime.now();
+
+        bookingFound.setCheckOutDate(checkoutDate);
+        bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
+        bookingFound.setStatus(BookingStatus.COMPLETED);
+
 
     }
 
