@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    Optional findByName(String name);
+    Optional<Customer> findByName(String name);
 
-    Optional findByEmail(String email);
+    Optional<Customer> findByEmail(String email);
 
-    Optional findByPhone(String phone);
+    Optional<Customer> findByPhone(String phone);
 
     Page<Customer> findByIsDeletedIsFalse(Pageable pageable);
 

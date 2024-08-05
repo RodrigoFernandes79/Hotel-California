@@ -7,7 +7,7 @@ import com.challenge.hotel_california.exceptions.RoomNotAvailableException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.repository.CustomerRepository;
-import com.challenge.hotel_california.validatorRefactor.IValidator;
+import com.challenge.hotel_california.validatorRefactor.IValidatorCustomers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +23,7 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
-    private List<IValidator> verifyValidators;
+    private List<IValidatorCustomers> verifyValidators;
 
     public Page<CustomerOutputGetListDTO> lisAllCustomers(Pageable pageable) {
         Page<Customer> findCustomers = customerRepository.findAll(pageable);
