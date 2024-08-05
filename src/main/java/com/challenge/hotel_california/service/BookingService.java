@@ -11,7 +11,8 @@ import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.BookingRepository;
 import com.challenge.hotel_california.repository.CustomerRepository;
 import com.challenge.hotel_california.repository.RoomRepository;
-import com.challenge.hotel_california.validatorRefactor.IValidator;
+import com.challenge.hotel_california.validatorRefactor.IValidatorBookings;
+import com.challenge.hotel_california.validatorRefactor.IValidatorBookingsDeleteAndCheckout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Service
 public class BookingService {
     @Autowired
@@ -32,7 +34,9 @@ public class BookingService {
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
-    private List<IValidator> verifyValidators;
+    private List<IValidatorBookings> verifyValidators;
+    @Autowired
+    private List<IValidatorBookingsDeleteAndCheckout> verifyDeleteAndCheckoutValidators;
 
     public Booking createAReservation(BookingEntryDTO bookingEntryDTO) {
         Room room = roomRepository.getReferenceById(bookingEntryDTO.roomId());
@@ -83,7 +87,7 @@ public class BookingService {
     public BookingDeleteStatusDTO deleteAReservation(long id) {
         Booking bookingFound = bookingRepository.getReferenceById(id);
 
-        verifyValidators.forEach(v -> v.verifyBookingsDeleteValidators(id, bookingFound));
+        verifyDeleteAndCheckoutValidators.forEach(v -> v.verifyBookingsValidators(id, bookingFound));
         bookingFound.setStatus(BookingStatus.CANCELLED);
         bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
 
@@ -94,7 +98,7 @@ public class BookingService {
     public void updateCheckOutDate(Long id) {
         Booking bookingFound = bookingRepository.getReferenceById(id);
 
-        verifyValidators.forEach(v -> v.verifyBookingsUpdateCheckOutValidators(id, bookingFound));
+        verifyDeleteAndCheckoutValidators.forEach(v -> v.verifyBookingsValidators(id, bookingFound));
         var checkoutDate = LocalDateTime.now();
 
         bookingFound.setCheckOutDate(checkoutDate);

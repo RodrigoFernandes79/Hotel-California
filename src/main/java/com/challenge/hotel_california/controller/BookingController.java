@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/bookings")
@@ -55,5 +57,15 @@ public class BookingController {
     @Transactional
     public ResponseEntity<BookingDeleteStatusDTO> deleteAReservation(@PathVariable long id) {
         return ResponseEntity.ok().body(bookingService.deleteAReservation(id));
+    }
+
+    @PatchMapping("/checkout/{id}")
+    @Transactional
+    public ResponseEntity<Map<String, String>> updateCheckOutDate(@PathVariable Long id) {
+        bookingService.updateCheckOutDate(id);
+        Map<String, String> message = new HashMap<>();
+        message.put("message: ", "Checkout successful!");
+        return ResponseEntity.ok().body(message);
+
     }
 }

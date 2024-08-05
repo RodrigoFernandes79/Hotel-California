@@ -13,7 +13,7 @@ import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.BookingRepository;
 import com.challenge.hotel_california.repository.RoomRepository;
-import com.challenge.hotel_california.validatorRefactor.IValidator;
+import com.challenge.hotel_california.validatorRefactor.IValidatorRooms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +29,7 @@ public class RoomService {
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
-    private List<IValidator> verifyValidators;
+    private List<IValidatorRooms> verifyValidators;
 
     public Room addRoom(RoomEntryDTO roomEntryDTO) {
         var foundRoomNumber = roomRepository.findByNumber(roomEntryDTO.number());
