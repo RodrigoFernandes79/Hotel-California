@@ -13,7 +13,7 @@ import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.BookingRepository;
 import com.challenge.hotel_california.repository.RoomRepository;
-import com.challenge.hotel_california.validatorRefactor.IValidatorRooms;
+import com.challenge.hotel_california.validatorRefactor.rooms.IValidatorRooms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,9 +58,9 @@ public class RoomService {
     }
 
     public Room updateAnExistingRoom(RoomEntryUpdateDTO roomEntryUpdateDTO, Long id) {
-        Room room = roomRepository.getReferenceById(id);
 
-        verifyValidators.forEach(v -> v.verifyRoomUpdateValidators(id, room, roomEntryUpdateDTO));
+        verifyValidators.forEach(v -> v.verifyRoomUpdateValidators(id, roomEntryUpdateDTO));
+        Room room = roomRepository.getReferenceById(id);
         room.updateRoom(roomEntryUpdateDTO);
         return roomRepository.save(room);
     }
