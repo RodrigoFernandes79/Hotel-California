@@ -1,4 +1,4 @@
-package com.challenge.hotel_california.validatorRefactor;
+package com.challenge.hotel_california.validatorRefactor.customers;
 
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
 import com.challenge.hotel_california.exceptions.CustomerExistsException;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class ValidatorsCustomersHandler implements IValidatorCustomers {
+public class ValidateIfCustomerNameExists implements IValidatorCustomers {
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -20,15 +20,5 @@ public class ValidatorsCustomersHandler implements IValidatorCustomers {
         if (foundCustomerName.isPresent()) {
             throw new CustomerExistsException("Customer " + customerEntryDTO.name() + " already exists in Database!");
         }
-        Optional<Customer> foundCustomerEmail = customerRepository.findByEmail(customerEntryDTO.email());
-        if (foundCustomerEmail.isPresent()) {
-            throw new CustomerExistsException("Email " + customerEntryDTO.email() + " already exists in Database!");
-        }
-        Optional<Customer> foundCustomerPhone = customerRepository.findByPhone(customerEntryDTO.phone());
-        if (foundCustomerPhone.isPresent()) {
-            throw new CustomerExistsException("Phone " + customerEntryDTO.phone() + " already exists in Database!");
-        }
     }
-
-
 }

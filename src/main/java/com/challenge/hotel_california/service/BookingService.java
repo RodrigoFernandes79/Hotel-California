@@ -5,14 +5,17 @@ import com.challenge.hotel_california.enums.BookingStatus;
 import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.BookingsNotFoundException;
 import com.challenge.hotel_california.exceptions.CustomerNotFoundException;
+import com.challenge.hotel_california.exceptions.RoomNotFoundException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.model.Room;
 import com.challenge.hotel_california.repository.BookingRepository;
 import com.challenge.hotel_california.repository.CustomerRepository;
 import com.challenge.hotel_california.repository.RoomRepository;
-import com.challenge.hotel_california.validatorRefactor.IValidatorBookings;
-import com.challenge.hotel_california.validatorRefactor.IValidatorBookingsDeleteAndCheckout;
+import com.challenge.hotel_california.validatorRefactor.bookingsCreateValidation.IValidatorBookings;
+import com.challenge.hotel_california.validatorRefactor.bookingsDeleteValidation.IValidatorBookingsDelete;
+import com.challenge.hotel_california.validatorRefactor.bookingsUpdateCheckoutValidation.IValidatorBookingsCheckout;
+import com.challenge.hotel_california.validatorRefactor.bookingsUpdateValidation.IValidatorBookingsUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,9 +39,17 @@ public class BookingService {
     @Autowired
     private List<IValidatorBookings> verifyValidators;
     @Autowired
-    private List<IValidatorBookingsDeleteAndCheckout> verifyDeleteAndCheckoutValidators;
+    private List<IValidatorBookingsUpdate> verifyUpdateBookingsValidators;
+    @Autowired
+    private List<IValidatorBookingsDelete> verifyDeleteBookingsValidators;
+    @Autowired
+    private List<IValidatorBookingsCheckout> verifyCheckoutValidators;
+
 
     public Booking createAReservation(BookingEntryDTO bookingEntryDTO) {
+        if (!roomRepository.existsById(bookingEntryDTO.roomId())) {
+            throw new RoomNotFoundException("Room " + bookingEntryDTO.roomId() + " not found into Database!");
+        }
         Room room = roomRepository.getReferenceById(bookingEntryDTO.roomId());
         Customer customer = customerRepository.getReferenceById(bookingEntryDTO.customerId());
 
@@ -70,13 +81,17 @@ public class BookingService {
     }
 
     public BookingOutputDTO updateReservation(BookingUpdateEntryDTO bookingUpdateEntryDTO, Long id) {
+        if (!bookingRepository.existsById(id)) {
+            throw new BookingsNotFoundException("No Booking was found");
+        }
 
-        Room roomFound = roomRepository.getReferenceById(bookingUpdateEntryDTO.roomId());
-        Customer customerFound = customerRepository.getReferenceById(bookingUpdateEntryDTO.customerId());
         Booking bookingFound = bookingRepository.getReferenceById(id);
+        Customer customerFound = customerRepository.getReferenceById(bookingUpdateEntryDTO.customerId());
+        Room roomFound = roomRepository.getReferenceById(bookingUpdateEntryDTO.roomId());
 
-        verifyValidators.forEach(v -> v.verifyBookingsUpdateValidators(bookingUpdateEntryDTO, roomFound,
-                bookingFound, customerFound, id));
+        verifyUpdateBookingsValidators.forEach(v -> v.verifyBookingsUpdateValidators(bookingUpdateEntryDTO,
+                roomFound, bookingFound, customerFound, id));
+
 
         bookingFound.updateBooking(customerFound, bookingUpdateEntryDTO, roomFound);
         calculateTax(bookingFound, bookingUpdateEntryDTO);
@@ -87,7 +102,7 @@ public class BookingService {
     public BookingDeleteStatusDTO deleteAReservation(long id) {
         Booking bookingFound = bookingRepository.getReferenceById(id);
 
-        verifyDeleteAndCheckoutValidators.forEach(v -> v.verifyBookingsValidators(id, bookingFound));
+        verifyDeleteBookingsValidators.forEach(v -> v.verifyBookingsDeleteValidators(id, bookingFound));
         bookingFound.setStatus(BookingStatus.CANCELLED);
         bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
 
@@ -98,7 +113,7 @@ public class BookingService {
     public void updateCheckOutDate(Long id) {
         Booking bookingFound = bookingRepository.getReferenceById(id);
 
-        verifyDeleteAndCheckoutValidators.forEach(v -> v.verifyBookingsValidators(id, bookingFound));
+        verifyCheckoutValidators.forEach(v -> v.verifyBookingsCheckoutValidators(id, bookingFound));
         var checkoutDate = LocalDateTime.now();
 
         bookingFound.setCheckOutDate(checkoutDate);

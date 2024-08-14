@@ -55,7 +55,7 @@ public class BookingController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<BookingDeleteStatusDTO> deleteAReservation(@PathVariable long id) {
+    public ResponseEntity<BookingDeleteStatusDTO> deleteAReservation(@PathVariable Long id) {
         return ResponseEntity.ok().body(bookingService.deleteAReservation(id));
     }
 

@@ -1,4 +1,4 @@
-package com.challenge.hotel_california.validatorRefactor;
+package com.challenge.hotel_california.validatorRefactor.customers;
 
 import com.challenge.hotel_california.DTOs.CustomerEntryDTO;
 
