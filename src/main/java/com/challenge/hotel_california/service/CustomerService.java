@@ -7,7 +7,7 @@ import com.challenge.hotel_california.exceptions.RoomNotAvailableException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.repository.CustomerRepository;
-import com.challenge.hotel_california.validatorRefactor.IValidatorCustomers;
+import com.challenge.hotel_california.validatorRefactor.customers.IValidatorCustomers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
