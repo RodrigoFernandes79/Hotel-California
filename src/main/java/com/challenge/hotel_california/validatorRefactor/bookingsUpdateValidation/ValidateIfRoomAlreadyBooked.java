@@ -6,18 +6,10 @@ import com.challenge.hotel_california.exceptions.BookingsExistsException;
 import com.challenge.hotel_california.model.Booking;
 import com.challenge.hotel_california.model.Customer;
 import com.challenge.hotel_california.model.Room;
-import com.challenge.hotel_california.repository.BookingRepository;
-import com.challenge.hotel_california.repository.RoomRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ValidateIfRoomAlreadyBooked implements IValidatorBookingsUpdate {
-
-    @Autowired
-    private RoomRepository roomRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
 
     @Override
     public void verifyBookingsUpdateValidators(BookingUpdateEntryDTO bookingUpdateEntryDTO, Room roomFound,
