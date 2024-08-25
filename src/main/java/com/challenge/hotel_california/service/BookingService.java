@@ -105,7 +105,7 @@ public class BookingService {
         verifyDeleteBookingsValidators.forEach(v -> v.verifyBookingsDeleteValidators(id, bookingFound));
         bookingFound.setStatus(BookingStatus.CANCELLED);
         bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
-
+        calculateTax(bookingFound, null);
         return new BookingDeleteStatusDTO(bookingFound);
 
     }
@@ -123,7 +123,7 @@ public class BookingService {
 
     }
 
-    public void calculateTax(Booking bookingFound, BookingUpdateEntryDTO bookingUpdateEntryDTO) {
+    private void calculateTax(Booking bookingFound, BookingUpdateEntryDTO bookingUpdateEntryDTO) {
         BigDecimal totalPrice = bookingFound.getRoom().getPrice();
 
         if (bookingFound.getStatus().equals(BookingStatus.CANCELLED)) {

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class validateIfBookingExistsById implements IValidatorBookingsDelete {
+public class ValidateIfBookingExistsById implements IValidatorBookingsDelete {
     @Autowired
     private BookingRepository bookingRepository;
 

@@ -1,10 +1,8 @@
 package com.challenge.hotel_california.validatorRefactor.bookingsDeleteValidation;
 
 import com.challenge.hotel_california.enums.BookingStatus;
-import com.challenge.hotel_california.enums.RoomStatus;
 import com.challenge.hotel_california.exceptions.BookingStatusException;
 import com.challenge.hotel_california.model.Booking;
-import com.challenge.hotel_california.service.BookingService;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -23,10 +21,6 @@ public class validatorTimeBookingIsBefore48Hour implements IValidatorBookingsDel
             if (differenceInHours < 48) {
                 throw new BookingStatusException("Cannot cancel a reservation under 48h of check-in Date");
             }
-            bookingFound.setStatus(BookingStatus.CANCELLED);
-            bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
-            BookingService bookingService = new BookingService();
-            bookingService.calculateTax(bookingFound, null);
         }
     }
 }
