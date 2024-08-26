@@ -6,7 +6,7 @@ import com.challenge.hotel_california.model.Booking;
 import org.springframework.stereotype.Component;
 
 @Component
-public class validatorBookingsStatus implements IValidatorBookingsDelete {
+public class ValidatorBookingsStatus implements IValidatorBookingsDelete {
     @Override
     public void verifyBookingsDeleteValidators(Long id, Booking bookingFound) {
         var bookingStatusFound = bookingFound.getStatus();
