@@ -44,15 +44,17 @@ public class CustomerService {
     }
 
     public CustomerOutputDTO updateAnExistingCustomer(CustomerUpdateEntryDTO customerUpdateEntryDTO, Long id) {
-        Customer customer = customerRepository.getReferenceById(id);
         verifyCustomerByIdAndThrowException(id);
+        Customer customer = customerRepository.getReferenceById(id);
+
         if (!customer.getId().equals(customerUpdateEntryDTO.id())) {
             throw new CustomerNotFoundException("Customer " + id + " not the same of ID: " + customerUpdateEntryDTO.id());
         }
         verifyStatusRoomAndThrowException(customer);
 
         customer.updateCustomer(customerUpdateEntryDTO);
-        return new CustomerOutputDTO(customerRepository.save(customer));
+        customerRepository.save(customer);
+        return new CustomerOutputDTO(customer);
     }
 
     public Map<String, String> deleteACustomer(Long id) {
