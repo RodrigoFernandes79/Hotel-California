@@ -37,14 +37,16 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Page<BookingOutputListDTO>> listAllReservations(@PageableDefault(sort = {"customerName"}, size = 5) Pageable pageable) {
-        return bookingService.listAllReservations(pageable);
+        bookingService.listAllReservations(pageable);
+        return ResponseEntity.ok().body(bookingService.listAllReservations(pageable));
 
     }
 
     @GetMapping("/customer_name")
     public ResponseEntity<Page<BookingOutputListDTO>> listAllReservationsByCustomer(@PageableDefault(sort = {"customerName"}, size = 5) Pageable pageable,
                                                                                     @RequestParam("customerName") String customerName) {
-        return bookingService.listAllReservationsByCustomer(pageable, customerName);
+
+        return ResponseEntity.ok().body(bookingService.listAllReservationsByCustomer(pageable, customerName));
     }
 
     @PatchMapping("/{id}")
