@@ -19,7 +19,6 @@ import com.challenge.hotel_california.validatorRefactor.bookingsUpdateValidation
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -59,15 +58,15 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
-    public ResponseEntity<Page<BookingOutputListDTO>> listAllReservations(Pageable pageable) {
+    public Page<BookingOutputListDTO> listAllReservations(Pageable pageable) {
         Page<Booking> bookingsFound = bookingRepository.findAll(pageable);
         if (bookingsFound.isEmpty()) {
             throw new BookingsNotFoundException("No Bookings was found into Database!");
         }
-        return ResponseEntity.ok().body(bookingsFound.map(BookingOutputListDTO::new));
+        return bookingsFound.map(BookingOutputListDTO::new);
     }
 
-    public ResponseEntity<Page<BookingOutputListDTO>> listAllReservationsByCustomer(Pageable pageable, String customerName) {
+    public Page<BookingOutputListDTO> listAllReservationsByCustomer(Pageable pageable, String customerName) {
         List<Customer> customerFound = customerRepository.findByNameContainingIgnoreCase(customerName);
         if (customerFound.isEmpty()) {
             throw new CustomerNotFoundException("Customer " + customerName + " not found!");
@@ -76,8 +75,7 @@ public class BookingService {
         if (bookingsFound.isEmpty()) {
             throw new BookingsNotFoundException("No Bookings was found into Database!");
         }
-
-        return ResponseEntity.ok().body(bookingsFound.map(BookingOutputListDTO::new));
+        return bookingsFound.map(BookingOutputListDTO::new);
     }
 
     public BookingOutputDTO updateReservation(BookingUpdateEntryDTO bookingUpdateEntryDTO, Long id) {
@@ -95,8 +93,8 @@ public class BookingService {
 
         bookingFound.updateBooking(customerFound, bookingUpdateEntryDTO, roomFound);
         calculateTax(bookingFound, bookingUpdateEntryDTO);
-
-        return new BookingOutputDTO(bookingRepository.save(bookingFound));
+        bookingRepository.save(bookingFound);
+        return new BookingOutputDTO(bookingFound);
     }
 
     public BookingDeleteStatusDTO deleteAReservation(long id) {
@@ -105,7 +103,7 @@ public class BookingService {
         verifyDeleteBookingsValidators.forEach(v -> v.verifyBookingsDeleteValidators(id, bookingFound));
         bookingFound.setStatus(BookingStatus.CANCELLED);
         bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
-        calculateTax(bookingFound, null);
+        calculateTax(bookingFound);
         return new BookingDeleteStatusDTO(bookingFound);
 
     }
@@ -140,5 +138,17 @@ public class BookingService {
 
         bookingFound.setTotalPrice(totalPrice);
     }
+    private void calculateTax(Booking bookingFound) {
+        BigDecimal totalPrice = bookingFound.getRoom().getPrice();
 
+        if (bookingFound.getStatus().equals(BookingStatus.CANCELLED)) {
+            // Applies a 20% cancellation fee
+            totalPrice = totalPrice.multiply(BigDecimal.valueOf(0.20));
+        }
+
+        // Rounds to two decimal places
+        totalPrice = totalPrice.setScale(2, RoundingMode.HALF_UP);
+
+        bookingFound.setTotalPrice(totalPrice);
+    }
 }
