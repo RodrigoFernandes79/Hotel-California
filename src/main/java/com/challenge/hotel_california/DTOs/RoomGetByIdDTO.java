@@ -8,7 +8,7 @@ import com.challenge.hotel_california.model.Room;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record RoomGetByIdDTO<bookings>(
+public record RoomGetByIdDTO(
         Long id,
         String number,
         BigDecimal price,
