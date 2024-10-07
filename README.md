@@ -27,7 +27,7 @@ Create a reservation management API for a hotel system.
    - **Spring Data JPA** for database interaction. ✅**DONE**
    - **Relational Database** (e.g., PostgreSQL, MySQL). ✅**DONE**
    - **Flyway** for database migration. ✅**DONE**
-   - **Integration Tests** with **Spring Test**.
+   - **Automated Tests** with **Junit and Mockito**. ✅**DONE**
    - **Error Handling** with `@ControllerAdvice`. ✅**DONE**
 
 4. **API Endpoints:**
