@@ -12,7 +12,8 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
+# Ignore the environment variables file
+.env
 ### IntelliJ IDEA ###
 .idea
 *.iws
