@@ -29,7 +29,7 @@ Create a reservation management API for a hotel system.
    - **Flyway** for database migration. ✅**DONE**
    - **Automated Tests** with **Junit and Mockito**. ✅**DONE**
    - **Error Handling** with `@ControllerAdvice`. ✅**DONE**
-   - **Swagger Configuration and Implementation for API Documentation.** 🔄**In Progress**
+   - **Swagger Configuration and Implementation for API Documentation.** ✅**DONE**
    - **Docker and Docker Compose.** 🔄**In Progress** 
 
 4. **API Endpoints:**
