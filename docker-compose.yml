@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    container_name: postgres_hotel_california_api
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DATABASE}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persist data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Execute SQL script
+    networks:
+      - network-hotel-california
+
+  adminer:
+    image: adminer
+    container_name: pg_admin_hotel_california_api
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      - network-hotel-california
+
+  hotel-california-api:
+    build: .
+    image: fernandesrh/hotel-california-api
+    container_name: hotel-california-api-brigde
+    restart: always
+    command: mvn spring-boot:run
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - network-hotel-california
+    environment:
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+
+volumes:
+  postgres_data:
+
+networks:
+  network-hotel-california:
+    driver: bridge
+
+
