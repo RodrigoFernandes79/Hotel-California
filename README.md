@@ -29,6 +29,7 @@ Create a reservation management API for a hotel system.
    - **Flyway** for database migration. ✅**DONE**
    - **Automated Tests** with **Junit and Mockito**. ✅**DONE**
    - **Error Handling** with `@ControllerAdvice`. ✅**DONE**
+   - **Docker and Docker Compose.** 🔄**In Progress** 
 
 4. **API Endpoints:**
    - `GET /rooms`: List all rooms. ✅**DONE**
