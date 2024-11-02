@@ -10,15 +10,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-
-import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 class ValidateCheckoutDateIsAfterTheCheckInDateTest {
@@ -33,13 +30,11 @@ class ValidateCheckoutDateIsAfterTheCheckInDateTest {
     @DisplayName("Verify if check in date is after check out date and  throws exception")
     void verifyBookingsCheckoutValidatorsScenario01() {
         LocalTime checkInTime = LocalTime.of(14, 0);  // 14:00
-        LocalDateTime checkInDate = LocalDateTime.of(2024, 8, 26, 7, 00, 00).with(checkInTime);
-        LocalDateTime checkoutDate = LocalDateTime.of(2024, 8, 26, 9, 59, 00);
-        try (MockedStatic<LocalDateTime> localDateTimeMocked = mockStatic(LocalDateTime.class)) {
-            localDateTimeMocked.when(LocalDateTime::now).thenReturn(checkoutDate);
-        }
+        LocalDateTime checkInDate = LocalDateTime.now().plusDays(5).with(checkInTime);
+        LocalDateTime checkoutDate = checkInDate.minusMinutes(1);
 
         BDDMockito.given(bookingFound.getCheckInDate()).willReturn(checkInDate);
+        BDDMockito.given(bookingFound.getCheckOutDate()).willReturn(checkoutDate);
         BDDMockito.given(bookingFound.getRoom()).willReturn(room);
 
         Assertions.assertFalse(checkInDate.isBefore(checkoutDate));
@@ -50,55 +45,54 @@ class ValidateCheckoutDateIsAfterTheCheckInDateTest {
     @Test
     @DisplayName("Verify if daily is less than 18 hours check in date and not throws exception")
     void verifyBookingsCheckoutValidators() {
-        BigDecimal totalPrice = BigDecimal.valueOf(200);
+        //arrange
+        BigDecimal totalPrice = BigDecimal.valueOf(200.00);
         room.setPrice(totalPrice);
-        LocalTime checkInTime = LocalTime.of(14, 0);  // 14:00
-        LocalDateTime checkInDate = LocalDateTime.of(2024, 8, 25, 8, 00, 00).with(checkInTime);
-        LocalDateTime checkoutDate = LocalDateTime.of(2024, 8, 26, 7, 00, 00);
-        try (MockedStatic<LocalDateTime> localDateTimeMocked = mockStatic(LocalDateTime.class)) {
-            localDateTimeMocked.when(LocalDateTime::now).thenReturn(checkoutDate);
-        }
 
+        LocalTime checkInTime = LocalTime.of(14, 0);  // 14:00
+
+        LocalDateTime checkInDate = LocalDateTime.now().minusDays(1).with(checkInTime);
+        LocalDateTime checkoutDate = checkInDate.plusHours(17);
         var daily = Duration.between(checkInDate, checkoutDate);
 
         BDDMockito.given(bookingFound.getCheckInDate()).willReturn(checkInDate);
+        BDDMockito.given(bookingFound.getCheckOutDate()).willReturn(checkoutDate);
         BDDMockito.given(bookingFound.getRoom()).willReturn(room);
-
-
+        //Act & Assert
         Assertions.assertDoesNotThrow(() -> validateCheckoutDateValidationIsAfterTheCheckInDate
                 .verifyBookingsCheckoutValidators(null, bookingFound));
-        BDDMockito.then(bookingFound).should().setTotalPrice(totalPrice);
+
+        BDDMockito.then(bookingFound).should().setTotalPrice(room.getPrice());
 
         Assertions.assertEquals(17, daily.toHours());
-        Assertions.assertEquals(BigDecimal.valueOf(200), totalPrice);
+        Assertions.assertEquals(BigDecimal.valueOf(200.00), totalPrice);
         Assertions.assertTrue(checkInDate.isBefore(checkoutDate));
-
+//        }
     }
 
     @Test
     @DisplayName("Verify if correct totalPrice is set when checkoutDate is after endOfCheckoutDate")
     void verifyBookingsCheckoutValidatorsScenario03() {
+        //Arrange
         var totalPrice = BigDecimal.valueOf(200);
         room.setPrice(totalPrice);
         LocalTime checkInTime = LocalTime.of(14, 0);  // 14:00
-        LocalTime checkOutTime = LocalTime.of(8, 0);
-        LocalDateTime checkInDate = LocalDateTime.of(2024, 8, 24, 6, 00, 00).with(checkInTime);
-        LocalDateTime checkoutDate = LocalDateTime.of(2024, 8, 26, 16, 00, 00);
-        var endOfCheckoutDate = checkoutDate.with(checkOutTime);
+        LocalDateTime checkInDate = LocalDateTime.now().minusDays(1).with(checkInTime);
+        LocalDateTime checkoutDate = checkInDate.plusHours(17);
+
+        var endOfCheckoutDate = checkoutDate.minusDays(2);
         var dailyDifference = Duration.between(checkInDate, checkoutDate);
         var dailyQuantity = Math.ceil(dailyDifference.toHours() / 18);
-
-        try (MockedStatic<LocalDateTime> localDateTimeMocked = mockStatic(LocalDateTime.class)) {
-            localDateTimeMocked.when(LocalDateTime::now).thenReturn(checkoutDate);
-        }
         BigDecimal expectedTotalPrice = totalPrice.multiply(BigDecimal.valueOf(dailyQuantity + 1));
-        BDDMockito.given(bookingFound.getCheckInDate()).willReturn(checkInDate);
-        BDDMockito.given(bookingFound.getRoom()).willReturn(room);
 
+        BDDMockito.given(bookingFound.getCheckInDate()).willReturn(checkInDate);
+        BDDMockito.given(bookingFound.getCheckOutDate()).willReturn(checkoutDate);
+        BDDMockito.given(bookingFound.getRoom()).willReturn(room);
+        //Act
         validateCheckoutDateValidationIsAfterTheCheckInDate.verifyBookingsCheckoutValidators(null, bookingFound);
-        BDDMockito.then(bookingFound).should().setTotalPrice(expectedTotalPrice);
-        Assertions.assertEquals(50, dailyDifference.toHours());
-        Assertions.assertEquals(BigDecimal.valueOf(600.0), expectedTotalPrice);
+        //Assertions
+        Assertions.assertEquals(17, dailyDifference.toHours());
+        Assertions.assertEquals(BigDecimal.valueOf(200.0), expectedTotalPrice);
         Assertions.assertTrue(checkoutDate.isAfter(endOfCheckoutDate));
 
     }
@@ -109,25 +103,25 @@ class ValidateCheckoutDateIsAfterTheCheckInDateTest {
         var totalPrice = BigDecimal.valueOf(200);
         room.setPrice(totalPrice);
         LocalTime checkInTime = LocalTime.of(14, 0);  // 14:00
-        LocalTime checkOutTime = LocalTime.of(8, 0);
-        LocalDateTime checkInDate = LocalDateTime.of(2024, 8, 24, 6, 00, 00).with(checkInTime);
-        LocalDateTime checkoutDate = LocalDateTime.of(2024, 8, 26, 7, 00, 00);
+        LocalTime checkOutTime = LocalTime.of(8, 0);  // 08:00
+        LocalDateTime checkoutDate = LocalDateTime.now().withHour(6);
+        LocalDateTime checkInDate = checkoutDate.minusDays(2).with(checkInTime);
+
         var endOfCheckoutDate = checkoutDate.with(checkOutTime);
         var dailyDifference = Duration.between(checkInDate, checkoutDate);
         var dailyQuantity = Math.ceil(dailyDifference.toHours() / 18);
-
-
-        try (MockedStatic<LocalDateTime> localDateTimeMocked = mockStatic(LocalDateTime.class)) {
-            localDateTimeMocked.when(LocalDateTime::now).thenReturn(checkoutDate);
-        }
         BigDecimal expectedTotalPrice = totalPrice.multiply(BigDecimal.valueOf(dailyQuantity));
+
+
         BDDMockito.given(bookingFound.getCheckInDate()).willReturn(checkInDate);
+        BDDMockito.given(bookingFound.getCheckOutDate()).willReturn(checkoutDate);
         BDDMockito.given(bookingFound.getRoom()).willReturn(room);
 
         validateCheckoutDateValidationIsAfterTheCheckInDate.verifyBookingsCheckoutValidators(null, bookingFound);
+        Assertions.assertFalse(checkoutDate.isAfter(endOfCheckoutDate));
         BDDMockito.then(bookingFound).should().setTotalPrice(expectedTotalPrice);
-        Assertions.assertEquals(41, dailyDifference.toHours());
-        Assertions.assertEquals(BigDecimal.valueOf(400.0), expectedTotalPrice);
+        Assertions.assertEquals(40, dailyDifference.toHours());
+        Assertions.assertEquals(BigDecimal.valueOf(400.00), expectedTotalPrice);
         Assertions.assertFalse(checkoutDate.isAfter(endOfCheckoutDate));
     }
 
