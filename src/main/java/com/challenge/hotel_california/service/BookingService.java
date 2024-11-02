@@ -111,10 +111,11 @@ public class BookingService {
     public void updateCheckOutDate(Long id) {
         Booking bookingFound = bookingRepository.getReferenceById(id);
 
-        verifyCheckoutValidators.forEach(v -> v.verifyBookingsCheckoutValidators(id, bookingFound));
         var checkoutDate = LocalDateTime.now();
-
         bookingFound.setCheckOutDate(checkoutDate);
+
+        verifyCheckoutValidators.forEach(v -> v.verifyBookingsCheckoutValidators(id, bookingFound));
+
         bookingFound.getRoom().setStatus(RoomStatus.AVAILABLE);
         bookingFound.setStatus(BookingStatus.COMPLETED);
 

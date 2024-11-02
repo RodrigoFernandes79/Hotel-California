@@ -18,19 +18,20 @@ class ValidateCheckoutDateIsAfterTheCheckInDate implements IValidatorBookingsChe
         LocalTime checkOutTime = LocalTime.of(8, 0);  // 08:00
 
         var checkInDate = bookingFound.getCheckInDate().with(checkInTime);
-        var checkoutDate = LocalDateTime.now();
+        var checkoutDate = bookingFound.getCheckOutDate();
         var expectedCheckoutDate = checkoutDate.with(checkOutTime);
         var totalPrice = bookingFound.getRoom().getPrice();
 
         if (!checkInDate.isBefore(checkoutDate)) {
             throw new BookingCheckInDateNotBeforeException("Check out date cannot be before the check in date");
         }
-
+        
         var dailyDifference = Duration.between(checkInDate, checkoutDate);
         var dailyQuantity = Math.ceil(dailyDifference.toHours() / 18);// 18 is the difference hours to a daily from 14:00 to 8:00
+
         if (dailyDifference.toHours() <= 18) {
             bookingFound.setTotalPrice(totalPrice);
-        } else if (dailyDifference.toHours() > 18) {
+        } else  {
             if (checkoutDate.isAfter(expectedCheckoutDate)) {
                 bookingFound.setTotalPrice(totalPrice.multiply(BigDecimal.valueOf(dailyQuantity + 1)));// sum one daily
             } else {
